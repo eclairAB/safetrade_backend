@@ -17,8 +17,8 @@ class ProfileController extends Controller {
 
   public function register () {
     $profile = Request::all();
-    UserProfile::create($profile);
+    $user = UserProfile::create($profile);
 
-    return response()->json(compact( 'profile' ));
+    return response()->json(compact('user'));
   }
 }

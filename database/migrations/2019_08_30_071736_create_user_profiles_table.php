@@ -15,7 +15,7 @@ class CreateUserProfilesTable extends Migration
     {
         Schema::create('user_profiles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('user_display_pic');
+            $table->string('user_display_pic')->nullable();
             $table->string('user_level');
             $table->string('user_name');
             $table->string('user_password');
@@ -29,7 +29,7 @@ class CreateUserProfilesTable extends Migration
             $table->string('address');
             $table->string('country');
             $table->string('state');
-            $table->string('transaction_pin');
+            $table->string('transaction_pin')->nullable();
             $table->timestamps();
         });
     }

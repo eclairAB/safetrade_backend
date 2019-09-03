@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class UserProfile extends Model
 {
-    use HasApiTokens, Notifiable;
+    use  Notifiable;
 
     protected $table = 'user_profiles';
     protected $fillable = [
