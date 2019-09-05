@@ -11,11 +11,15 @@ use DB;
 
 class ProfileController extends Controller {
 
-  public function login () {
+  public function login ($user_name, $user_password) {
 
+    return DB::table('user_profiles')
+             ->where('user_name', $user_name)
+             ->where('user_password', $user_password)
+             ->value('id');
   }
 
-  public function register () {
+  public function signup () {
     $profile = Request::all();
     $user = UserProfile::create($profile);
 

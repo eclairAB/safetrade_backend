@@ -21,4 +21,20 @@ Route::get('/users', function (Request $request) {
     return response()->json(['name' => 'Behrang No']);
 });
 
-Route::post('signup', 'ProfileController@register');
+// Route::post('signup', 'ProfileController@signup');
+// Route::get('login/{user_name, user_password}', 'ProfileController@login');
+
+// Route::prefix('v1')->group(function(){
+//  Route::post('auth_login', 'AuthController@auth_login');
+//  Route::post('auth_register', 'AuthController@auth_register');
+//  Route::group(['middleware' => 'auth:api'], function(){
+//  Route::post('auth_getUser', 'AuthController@auth_getUser');
+//  });
+// });
+
+
+Route::post('login', 'API\UserController@login');
+Route::post('register', 'API\UserController@register');
+Route::group(['middleware' => 'auth:api'], function(){
+	Route::post('details', 'API\UserController@details');
+});
