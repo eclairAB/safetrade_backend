@@ -17,6 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+<<<<<<< HEAD
 Route::get('/users', function (Request $request) {
     return response()->json(['name' => 'Behrang No']);
 });
@@ -38,3 +39,11 @@ Route::post('register', 'API\UserController@register');
 Route::group(['middleware' => 'auth:api'], function(){
 	Route::post('details', 'API\UserController@details');
 });
+=======
+
+Route::post('login', 'Auth\UserController@login');
+Route::post('register', 'Auth\UserController@register');
+Route::group(['middleware' => 'auth:api'], function(){
+	Route::post('details', 'Auth\UserController@details');
+});
+>>>>>>> 86affd5b515696b5007b315a2bfc9d9cc1e75833

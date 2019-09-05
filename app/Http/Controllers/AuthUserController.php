@@ -1,21 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
-<<<<<<< HEAD
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use Illuminate\Support\Facades\Auth;
+use App\User; 
+use Validator;
 
-class UserController extends Controller
-{
-    //
-=======
-use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Controller;
-use App\User;
-use Auth;
-
-class UserController extends Controller
+class AuthUserController extends Controller 
 {
 	public $successStatus = 200;
 
@@ -55,6 +48,5 @@ class UserController extends Controller
     { 
         $user = Auth::user(); 
         return response()->json(['success' => $user], $this-> successStatus); 
-    }
->>>>>>> 86affd5b515696b5007b315a2bfc9d9cc1e75833
+    } 
 }
