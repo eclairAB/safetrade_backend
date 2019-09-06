@@ -1,5 +1,7 @@
 <?php
-
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods:  POST, GET, OPTIONS, PATCH, DELETE');
+header('Access-Control-Allow-Headers: Content-Type, x-xsrf-token');
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
