@@ -18,6 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('login', 'Auth\UserController@login');
+Route::get('getProfile/{uid}', 'Auth\UserController@getProfile');
+
 Route::post('register', 'Auth\UserController@register');
 Route::group(['middleware' => 'auth:api'], function(){
 	Route::post('details', 'Auth\UserController@details');
