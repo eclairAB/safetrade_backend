@@ -16,11 +16,36 @@ class UserController extends Controller {
     if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
       $user = Auth::user(); 
       $success['token'] =  $user->createToken('MyApp')-> accessToken; 
-      return response()->json(['success' => $success], $this-> successStatus); 
+      return response()->json(['success' => $success, $user->id], $this-> successStatus); 
     } 
     else {
       return response()->json(['error'=>'Unauthorised'], 401); 
     } 
+  }
+
+  public function getProfile($uid) {
+    // return User::find($uid);
+
+    $users = User::select($uid)
+     ->select([
+          'id',
+          'username',
+          'email',
+          'password',
+          'user_display_pic',
+          'user_level',
+          'name_first',
+          'name_last',
+          'contact_no',
+          'birth_date',
+          'zip_code',
+          'city',
+          'address',
+          'country',
+          'state',
+     ])->find($uid);
+
+     return response()->json(compact('users'));
   }
 
   public function register(Request $request) { 
