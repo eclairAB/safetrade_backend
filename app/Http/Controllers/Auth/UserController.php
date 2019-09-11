@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\User;
 use Auth;
+use Image;
 
 class UserController extends Controller {
 
@@ -67,8 +68,8 @@ class UserController extends Controller {
     ]);
 
   if ($validator->fails()) { 
-      return response()->json(['error'=>$validator->errors()], 401);            
-    }
+    return response()->json(['error'=>$validator->errors()], 401);            
+  }
 
   $input = $request->all(); 
     $input['password'] = bcrypt($input['password']); 
@@ -91,5 +92,46 @@ class UserController extends Controller {
   public function details() { 
     $user = Auth::user(); 
     return response()->json(['success' => $user], $this-> successStatus); 
+  }
+
+  public function updateProfile(Request $request)
+  {
+    $validator = Validator::make($request->all(), [ 
+      'username' => 'required', 
+      'email' => 'required|email', 
+      'password' => 'required', 
+      'c_password' => 'required|same:password',
+      'name_first' => 'required',
+      'name_last' => 'required',
+      'contact_no' => 'required',
+      'birth_date' => 'required',
+      'zip_code' => 'required',
+      'city' => 'required',
+      'address' => 'required',
+      'country' => 'required',
+      'state' => 'required'
+    ]);
+    if ($validator->fails()) { 
+      return response()->json(['error'=>$validator->errors()], 401);            
+    }
+
+    $user = Auth::user();
+
+    $user->username = $request->input('username');
+    $user->email = $request->input('email');
+    $user->password = bcrypt($request->input('password'));
+    $user->name_first = $request->input('name_first');
+    $user->name_last = $request->input('name_last');
+    $user->contact_no = $request->input('contact_no');
+    $user->birth_date = $request->input('birth_date');
+    $user->zip_code = $request->input('zip_code');
+    $user->city = $request->input('city');
+    $user->address = $request->input('address');
+    $user->country = $request->input('country');
+    $user->state = $request->input('state');
+
+    $user->save();
+
+    return response()->json(compact('user'));
   }
 }
