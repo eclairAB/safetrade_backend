@@ -28,5 +28,5 @@ Route::group(['middleware' => 'auth:api'], function(){
 	Route::post('loadwallet', 'UserWalletController@loadWallet');
 	Route::post('search/other/user', 'UserWalletController@searchOtherUser');
 	Route::post('user/transfer/{id}', 'UserWalletController@userTranfer');
-	Route::post('user/trade/{id}', 'UserWalletController@postUserTrade');
+	Route::post('user/trade', 'UserWalletController@postUserTrade');
 });

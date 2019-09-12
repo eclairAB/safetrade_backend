@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserHistory extends Model
 {
-    protected $table = 'user_trades';
+    protected $table = 'user_histories';
     protected $fillable = [
-        'user_id',
-		'request_amount',
-		'trade_amount',
-		'request_currency',
-		'trade_currency'
+        'sender_id',
+		'receiver_id',
+		'amount',
+		'transaction_option',
+		'currency_trade',
+		'currency_request'
 	];
 }
