@@ -17,7 +17,7 @@ class UserController extends Controller {
     if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
       $user = Auth::user(); 
       $success['token'] =  $user->createToken('MyApp')-> accessToken; 
-      return response()->json(['success' => $success, $user->id], $this-> successStatus); 
+      return response()->json(['success' => $success, 'id'=> $user->id], $this-> successStatus); 
     } 
     else {
       return response()->json(['error'=>'Unauthorised'], 401); 
@@ -46,7 +46,7 @@ class UserController extends Controller {
           'state',
      ])->find($uid);
 
-     return response()->json(compact('users'));
+    return response()->json(compact('users'));
   }
 
   public function register(Request $request) { 
@@ -86,7 +86,7 @@ class UserController extends Controller {
     $success['address'] = $user->address;
     $success['country'] = $user->country;
     $success['state'] = $user->state;
-    return response()->json(['success'=>$success], $this-> successStatus); 
+    return response()->json(['success'=>$success, 'id'=>$user->id], $this-> successStatus); 
   }
 
   public function details() { 
@@ -101,6 +101,7 @@ class UserController extends Controller {
       'email' => 'required|email', 
       'password' => 'required', 
       'c_password' => 'required|same:password',
+      'user_display_pic' => 'required',
       'name_first' => 'required',
       'name_last' => 'required',
       'contact_no' => 'required',
@@ -120,6 +121,7 @@ class UserController extends Controller {
     $user->username = $request->input('username');
     $user->email = $request->input('email');
     $user->password = bcrypt($request->input('password'));
+    $user->user_display_pic = $request->input('user_display_pic');
     $user->name_first = $request->input('name_first');
     $user->name_last = $request->input('name_last');
     $user->contact_no = $request->input('contact_no');
