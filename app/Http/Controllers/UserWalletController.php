@@ -13,9 +13,10 @@ use DB;
 
 class UserWalletController extends Controller
 {
-    public function myCurrencies($id)
+    public function myCurrencies()
     {
-    	$user_currency = UserCurrency::with('user')->where('user_id',$id)->first();
+    	$sender = Auth::user();
+    	$user_currency = UserCurrency::with('user')->where('user_id',$sender->id)->first();
     	return response()->json(compact('user_currency'));
     }
 
@@ -93,6 +94,17 @@ class UserWalletController extends Controller
     		}
     	}else{
     		return response()->json(['message' => 'Incorrect Transaction Pin!']);
+    	}
+    }
+
+    public function getUserTrade($id)
+    {
+    	$receiver = Auth::user();
+
+    	$your_balance = UserCurrency::where('user_id',$sender->id)->first();
+    	$trader_balance = UserCurrency::where('user_id',$id)->first();
+    	if($your_balance[Request::get('trade_amount')]){
+
     	}
     }
 }

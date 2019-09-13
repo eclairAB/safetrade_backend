@@ -22,9 +22,10 @@ Route::post('register', 'Auth\UserController@register');
 Route::group(['middleware' => 'auth:api'], function(){
 	Route::post('details', 'Auth\UserController@details');
 	Route::post('update/user', 'Auth\UserController@updateProfile');
-	Route::get('my/currencies/{id}', 'UserWalletController@myCurrencies');
+	Route::get('my/currencies', 'UserWalletController@myCurrencies');
 	Route::post('loadwallet', 'UserWalletController@loadWallet');
 	Route::post('search/other/user', 'UserWalletController@searchOtherUser');
 	Route::post('user/transfer/{id}', 'UserWalletController@userTranfer');
 	Route::post('user/trade', 'UserWalletController@postUserTrade');
+	Route::post('getUser/trade/{id}', 'UserWalletController@getUserTrade');
 });
