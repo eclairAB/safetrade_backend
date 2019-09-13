@@ -15,9 +15,9 @@ class UserController extends Controller {
 
   public function login() { 
     if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
-      $user = Auth::user(); 
-      $success['token'] =  $user->createToken('MyApp')-> accessToken; 
-      return response()->json(['success' => $success, 'id'=> $user->id], $this-> successStatus); 
+      $success = Auth::user(); 
+      $success['token'] =  $success->createToken('MyApp')-> accessToken; 
+      return response()->json(['success' => $success, 'id' => $success->id], $this-> successStatus);
     } 
     else {
       return response()->json(['error'=>'Unauthorised'], 401); 
@@ -94,14 +94,25 @@ class UserController extends Controller {
     return response()->json(['success' => $user], $this-> successStatus); 
   }
 
-  public function updateProfile(Request $request)
+  public function updateProfilePicture(Request $request)
   {
     $validator = Validator::make($request->all(), [ 
-      'username' => 'required', 
-      'email' => 'required|email', 
-      'password' => 'required', 
-      'c_password' => 'required|same:password',
       'user_display_pic' => 'required',
+    ]);
+    if ($validator->fails()) { 
+      return response()->json(['error'=>$validator->errors()], 401);            
+    }
+
+    $user = Auth::user();
+    $user->user_display_pic = $request->input('user_display_pic');
+    $user->save();
+
+    return response()->json(compact('user'));
+  }
+
+  public function updateProfileBasic(Request $request)
+  {
+    $validator = Validator::make($request->all(), [ 
       'name_first' => 'required',
       'name_last' => 'required',
       'contact_no' => 'required',
@@ -118,10 +129,6 @@ class UserController extends Controller {
 
     $user = Auth::user();
 
-    $user->username = $request->input('username');
-    $user->email = $request->input('email');
-    $user->password = bcrypt($request->input('password'));
-    $user->user_display_pic = $request->input('user_display_pic');
     $user->name_first = $request->input('name_first');
     $user->name_last = $request->input('name_last');
     $user->contact_no = $request->input('contact_no');
@@ -132,6 +139,45 @@ class UserController extends Controller {
     $user->country = $request->input('country');
     $user->state = $request->input('state');
 
+    $user->save();
+
+    return response()->json(compact('user'));
+  }
+
+  public function updateProfileAccount(Request $request)
+  {
+    $validator = Validator::make($request->all(), [ 
+      'username' => 'required', 
+      'email' => 'required|email', 
+      'password' => 'required', 
+      'c_password' => 'required|same:password',
+    ]);
+    if ($validator->fails()) { 
+      return response()->json(['error'=>$validator->errors()], 401);            
+    }
+
+    $user = Auth::user();
+
+    $user->username = $request->input('username');
+    $user->email = $request->input('email');
+    $user->password = bcrypt($request->input('password'));
+
+    $user->save();
+
+    return response()->json(compact('user'));
+  }
+
+  public function updateProfilePin(Request $request)
+  {
+    $validator = Validator::make($request->all(), [ 
+      'transaction_pin' => 'required',
+    ]);
+    if ($validator->fails()) { 
+      return response()->json(['error'=>$validator->errors()], 401);            
+    }
+
+    $user = Auth::user();
+    $user->transaction_pin = $request->input('transaction_pin');
     $user->save();
 
     return response()->json(compact('user'));
