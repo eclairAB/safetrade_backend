@@ -94,7 +94,7 @@ class UserController extends Controller {
     return response()->json(['success' => $user], $this-> successStatus); 
   }
 
-  public function updateProfilePicture(Request $request)
+  public function updateProfilePicture(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [ 
       'user_display_pic' => 'required',
@@ -103,14 +103,14 @@ class UserController extends Controller {
       return response()->json(['error'=>$validator->errors()], 401);            
     }
 
-    $user = Auth::user();
+    $user = User::find($id);
     $user->user_display_pic = $request->input('user_display_pic');
     $user->save();
 
     return response()->json(compact('user'));
   }
 
-  public function updateProfileBasic(Request $request)
+  public function updateProfileBasic(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [ 
       'name_first' => 'required',
@@ -127,7 +127,7 @@ class UserController extends Controller {
       return response()->json(['error'=>$validator->errors()], 401);            
     }
 
-    $user = Auth::user();
+    $user = User::find($id);
 
     $user->name_first = $request->input('name_first');
     $user->name_last = $request->input('name_last');
@@ -144,19 +144,20 @@ class UserController extends Controller {
     return response()->json(compact('user'));
   }
 
-  public function updateProfileAccount(Request $request)
+  public function updateProfileAccount(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [ 
       'username' => 'required', 
-      'email' => 'required|email', 
-      'password' => 'required', 
+      'email' => 'required|email',
+      'old_password' => 'required',
+      'password' => 'required',
       'c_password' => 'required|same:password',
     ]);
     if ($validator->fails()) { 
       return response()->json(['error'=>$validator->errors()], 401);            
     }
 
-    $user = Auth::user();
+    $user = User::find($id);
 
     $user->username = $request->input('username');
     $user->email = $request->input('email');
@@ -167,7 +168,7 @@ class UserController extends Controller {
     return response()->json(compact('user'));
   }
 
-  public function updateProfilePin(Request $request)
+  public function updateProfilePin(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [ 
       'transaction_pin' => 'required',
@@ -176,7 +177,7 @@ class UserController extends Controller {
       return response()->json(['error'=>$validator->errors()], 401);            
     }
 
-    $user = Auth::user();
+    $user = User::find($id);
     $user->transaction_pin = $request->input('transaction_pin');
     $user->save();
 
