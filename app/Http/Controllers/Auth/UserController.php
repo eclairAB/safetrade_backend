@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use Auth;
 use Image;
+use Hash;
 
 class UserController extends Controller {
 
@@ -146,26 +147,42 @@ class UserController extends Controller {
 
   public function updateProfileAccount(Request $request, $id)
   {
-    $validator = Validator::make($request->all(), [ 
-      'username' => 'required', 
-      'email' => 'required|email',
-      'old_password' => 'required',
-      'password' => 'required',
-      'c_password' => 'required|same:password',
-    ]);
-    if ($validator->fails()) { 
-      return response()->json(['error'=>$validator->errors()], 401);            
+    $users = User::find($id);
+      if(empty($request->password)){
+        $validator = Validator::make($request->all(), [ 
+          'username' => 'required', 
+          'email' => 'required|email'
+        ]);
+        if ($validator->fails()) { 
+          return response()->json(['error'=>$validator->errors()], 401);            
+        }
+
+        $user = User::find($id);
+        $user->username = $request->input('username');
+        $user->email = $request->input('email');
+        $user->save();
+
+        return response()->json(compact('user'));
+      }
+      else{
+        $validator = Validator::make($request->all(), [ 
+          'username' => 'required', 
+          'email' => 'required|email', 
+          'password' => 'required', 
+          'c_password' => 'required|same:password'  
+      ]);
+      if ($validator->fails()) { 
+        return response()->json(['error'=>$validator->errors()], 401);            
+      }
+
+      $user = User::find($id);
+      $user->username = $request->input('username');
+      $user->email = $request->input('email');
+      $user->password = bcrypt($request->input('password'));
+      $user->save();
+
+      return response()->json(compact('user'));
     }
-
-    $user = User::find($id);
-
-    $user->username = $request->input('username');
-    $user->email = $request->input('email');
-    $user->password = bcrypt($request->input('password'));
-
-    $user->save();
-
-    return response()->json(compact('user'));
   }
 
   public function updateProfilePin(Request $request, $id)
@@ -173,7 +190,7 @@ class UserController extends Controller {
     $validator = Validator::make($request->all(), [ 
       'transaction_pin' => 'required',
     ]);
-    if ($validator->fails()) { 
+    if ($validator->fails()) {  
       return response()->json(['error'=>$validator->errors()], 401);            
     }
 
