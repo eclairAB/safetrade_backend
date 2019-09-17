@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\UserCurrency;
 use App\User;
 use Auth;
 use Image;
@@ -87,6 +88,20 @@ class UserController extends Controller {
     $success['address'] = $user->address;
     $success['country'] = $user->country;
     $success['state'] = $user->state;
+
+    $wallet = new UserCurrency;
+    $wallet->user_id = $user->id;
+    $wallet->btc = '0.0000000000';
+    $wallet->eth = '0.0000000000';
+    $wallet->xrp = '0.0000000000';
+    $wallet->ltc = '0.0000000000';
+    $wallet->bch = '0.0000000000';
+    $wallet->eos = '0.0000000000';
+    $wallet->bnb = '0.0000000000';
+    $wallet->usdt = '0.0000000000';
+    $wallet->bsv = '0.0000000000';
+    $wallet->trx = '0.0000000000';
+    $wallet->save();
     return response()->json(['success'=>$success, 'id'=>$user->id], $this-> successStatus); 
   }
 

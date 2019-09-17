@@ -15,4 +15,14 @@ class UserHistory extends Model
 		'currency_trade',
 		'currency_request'
 	];
+
+	public function user_sender()
+	{
+		return $this->hasOne('App\User', 'id','sender_id');
+	}
+
+	public function user_receiver()
+	{
+		return $this->hasOne('App\User', 'id','receiver_id');
+	}
 }
