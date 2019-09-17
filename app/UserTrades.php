@@ -14,4 +14,14 @@ class UserTrades extends Model
 		'request_currency',
 		'trade_currency'
 	];
+
+	public function trader_info()
+	{
+		return $this->hasOne('App\User', 'id','user_id');
+	}
+
+	// public function user_receiver()
+	// {
+	// 	return $this->hasOne('App\User', 'id','receiver_id');
+	// }
 }

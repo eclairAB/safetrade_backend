@@ -35,4 +35,6 @@ Route::group(['middleware' => 'auth:api', 'cors'], function(){
 	Route::post('user/transfer/{id}', 'UserWalletController@userTranfer');
 	Route::post('user/trade', 'UserWalletController@postUserTrade');
 	Route::post('getUser/trade/{id}', 'UserWalletController@getUserTrade');
+	Route::post('filter/byCurrency', 'ViewController@filterHistorybyCurrency');
+	Route::get('trade/list', 'ViewController@tradeList');
 });
