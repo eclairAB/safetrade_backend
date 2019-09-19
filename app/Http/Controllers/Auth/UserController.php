@@ -16,7 +16,7 @@ class UserController extends Controller {
   public $successStatus = 200;
 
   public function login() { 
-    if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
+    if(Auth::attempt(['username' => request('username'), 'password' => request('password')])){ 
       $success = Auth::user(); 
       $success['token'] =  $success->createToken('MyApp')-> accessToken; 
       return response()->json(['success' => $success, 'id' => $success->id], $this-> successStatus);
@@ -53,7 +53,7 @@ class UserController extends Controller {
 
   public function register(Request $request) { 
     $validator = Validator::make($request->all(), [ 
-        'username' => 'required', 
+        'username' => 'required|unique:users', 
         'email' => 'required|email', 
         'password' => 'required', 
         'c_password' => 'required|same:password',

@@ -54,6 +54,7 @@ class UserWalletController extends Controller
 	    			$transfer->transaction_option = Request::get('transaction_option');
 	    			$transfer->currency_trade = Request::get('currency_trade');
 	    			$transfer->currency_request = Request::get('currency_request');
+                    
 					$sender_balance->decrement(Request::get('currency_trade'), Request::get('amount'));
 					$receiver_balance->increment(Request::get('currency_trade'), Request::get('amount'));
 					
