@@ -39,10 +39,10 @@ class UserWalletController extends Controller
     public function userTranfer($id)
     {
     	$sender = Auth::user();
-
+        $receiver_credentials = User::find($id);
     	$sender_balance = UserCurrency::where('user_id',$sender->id)->first();
     	$receiver_balance = UserCurrency::where('user_id',$id)->first();
-    	if(Request::get('transaction_pin') == $sender->transaction_pin){
+    	if(Request::get('transaction_pin') == $sender->transaction_pin AND Request::get('email') == $receiver_credentials->email){
     		if($sender_balance[Request::get('currency_trade')] >= 0 || $sender_balance[Request::get('currency_trade')] >= 00.00){
     			if(Request::get('amount') > $sender_balance[Request::get('currency_trade')]){
     				return response()->json(['message' => 'Invalid Request Transfer!']);
@@ -65,7 +65,7 @@ class UserWalletController extends Controller
     			return response()->json(['message' => 'Insufficient Balance!']);
     		}
     	}else{
-    		return response()->json(['message' => 'Incorrect Transaction Pin!']);
+    		return response()->json(['message' => 'Incorrect Credentials!']);
     	}
     }
 
