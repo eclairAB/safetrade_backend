@@ -18,7 +18,8 @@ class UserCurrency extends Model
 		'bnb',
 		'usdt',
 		'bsv',
-		'trx'
+		'trx',
+		'cash'
 	];
 
 	public function user()
