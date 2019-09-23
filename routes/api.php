@@ -38,3 +38,9 @@ Route::group(['middleware' => 'auth:api', 'cors'], function(){
 	Route::post('filter/byCurrency', 'ViewController@filterHistorybyCurrency');
 	Route::get('trade/list', 'ViewController@tradeList');
 });
+
+Route::group(['namespace' => 'Auth', 'middleware' => 'auth:api', 'prefix' => 'password'], function () {    
+    Route::post('create', 'PasswordResetController@create');
+    Route::get('find/{token}', 'PasswordResetController@find');
+    Route::post('reset', 'PasswordResetController@reset');
+});

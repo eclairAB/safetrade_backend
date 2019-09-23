@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePasswordResetsTable extends Migration
+class AddCashCurrencyIntoUserCurrencies extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreatePasswordResetsTable extends Migration
      */
     public function up()
     {
-        Schema::create('password_resets', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('email')->index();
-            $table->string('token');
-            $table->timestamps();
+        Schema::table('user_currencies', function (Blueprint $table) {
+            $table->double('cash', 11, 10)->after('trx');
         });
     }
 
@@ -28,6 +25,8 @@ class CreatePasswordResetsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('password_resets');
+        Schema::table('user_currencies', function (Blueprint $table) {
+            //
+        });
     }
 }
