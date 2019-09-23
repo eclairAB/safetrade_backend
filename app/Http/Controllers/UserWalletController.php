@@ -21,7 +21,7 @@ class UserWalletController extends Controller
 
         $array = [
             'btc' => number_format($user_currency->btc, 10),
-            'etc' => number_format($user_currency->etc, 10),
+            'eth' => number_format($user_currency->eth, 10),
             'xrp' => number_format($user_currency->xrp, 10),
             'ltc' => number_format($user_currency->ltc, 10),
             'bch' => number_format($user_currency->bch, 10),

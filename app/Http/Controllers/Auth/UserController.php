@@ -101,6 +101,7 @@ class UserController extends Controller {
     $wallet->usdt = '0.0000000000';
     $wallet->bsv = '0.0000000000';
     $wallet->trx = '0.0000000000';
+    $wallet->cash = '0.0000000000';
     $wallet->save();
     return response()->json(['success'=>$success, 'id'=>$user->id], $this-> successStatus); 
   }
