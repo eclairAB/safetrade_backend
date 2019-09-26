@@ -11,9 +11,6 @@
 |
 */
 
-use App\Message;
-use App\Events\MessageSent;
-
 Route::get('/', function () {
     return view('welcome');
 });
@@ -21,19 +18,3 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-
-Route::get('/messages', function () {
-    $messages = Message::take(200)->pluck('content');
-    return $messages;
-});
-
-Route::post('/messages', function () {
-    $message = new Message();
-    $content = request('message');
-    $message->content = $content;
-    $message->save();
-
-    event(new MessageSent($content));
-
-    return $content;
-});
