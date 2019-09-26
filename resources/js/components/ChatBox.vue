@@ -4,11 +4,7 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <row>
-                            <div class="col">
-                                <p v-for="message in messages">{{ message }}</p>
-                            </div>
-                        </row>
+                        <p v-for="message in messages">{{ message }}</p>
                     </div>
                 </div>
             </div>
