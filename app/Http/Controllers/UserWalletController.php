@@ -138,27 +138,27 @@ class UserWalletController extends Controller
     {
     	$receiver = Auth::user();
 
-    	$your_balance = UserCurrency::where('user_id',$receiver->id)->first();
-    	$trader_balance = UserCurrency::where('user_id',$id)->first();
-    	if(Request::get('transaction_pin') == $receiver->transaction_pin){
-    		if(Request::get('currency_trade') > $your_balance[Request::get('currency_request')]){
-    			return response()->json(['message' => 'Invalid Request Trade!']);
-    		}else{
-    			$transfer = new UserHistory;
-    			$transfer->sender_id = $sender->id;
-    			$transfer->receiver_id = $id;
-    			$transfer->amount = Request::get('amount');
-    			$transfer->transaction_option = Request::get('transaction_option');
-    			$transfer->currency_trade = Request::get('currency_trade');
-    			$transfer->currency_request = Request::get('currency_request');
-				$sender_balance->decrement(Request::get('currency_trade'), Request::get('amount'));
-				$receiver_balance->increment(Request::get('currency_trade'), Request::get('amount'));
-				
-				$transfer->save();
-				return response()->json(compact('transfer'));
-    		}
-    	}else{
-    		return response()->json(['message' => 'Incorrect Transaction Pin!']);
-    	}
+        $your_balance = UserCurrency::where('user_id',$receiver->id)->first();
+        $trader_balance = UserCurrency::where('user_id',$id)->first();
+        if(Request::get('transaction_pin') == $receiver->transaction_pin){
+            if(Request::get('currency_trade') > $your_balance[Request::get('currency_request')]){
+                return response()->json(['message' => 'Invalid Request Trade!']);
+            }else{
+                $transfer = new UserHistory;
+                $transfer->sender_id = $receiver->id;
+                $transfer->receiver_id = $id;
+                $transfer->amount = Request::get('amount');
+                $transfer->transaction_option = Request::get('transaction_option');
+                $transfer->currency_trade = Request::get('currency_trade');
+                $transfer->currency_request = Request::get('currency_request');
+                $your_balance->decrement(Request::get('currency_trade'), Request::get('amount'));
+                $trader_balance->increment(Request::get('currency_trade'), Request::get('amount'));
+                
+                $transfer->save();
+                return response()->json(compact('transfer'));
+            }
+        }else{
+            return response()->json(['message' => 'Incorrect Transaction Pin!']);
+        }
     }
 }
