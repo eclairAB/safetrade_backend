@@ -134,31 +134,71 @@ class UserWalletController extends Controller
     	}
     }
 
-    public function getUserTrade($id)
+    public function getUserTrade($id, $trader_id)
     {
-    	$receiver = Auth::user();
+    	//i check kung kinsa ang authenticated na user.
+        //sa diri na part kung ikaw ang authenticated usually ikaw ang maka maka dawat sa trade.
+        $receiver = Auth::user();
 
+        //data sa maka dawat sa trade (receiver).
         $your_balance = UserCurrency::where('user_id',$receiver->id)->first();
-        $trader_balance = UserCurrency::where('user_id',$id)->first();
+
+        //data sa nag create ug trade (sender).
+        $trader_balance = UserCurrency::where('user_id',$trader_id)->first();
+
+        //data sa gi select nimo na trade sa baba gi number_format para makuha ang exact form sa value.
+        $selected_trade = UserTrades::where('status',1)->find($id);
+        $sender_amount = number_format($selected_trade->trade_amount, 10);
+        $receiver_amount = number_format($selected_trade->request_amount,10);
+
+        //checker kung unsa ang gusto sa wallet sa creator ug trade.
+        $trader_wallet_currency = $selected_trade->trade_currency;
+
+        //1st for security purpose mag input ug transaction pin para maka trade kung mali Incorrect Transaction Pin!.
         if(Request::get('transaction_pin') == $receiver->transaction_pin){
-            if(Request::get('currency_trade') > $your_balance[Request::get('currency_request')]){
+            
+            //2nd pag ang itrade sa sender na value kay greater than sa imong balance(receiver) Invalid Request Trade!
+            if(number_format($selected_trade->trade_amount,10) > $your_balance[$trader_wallet_currency]){
                 return response()->json(['message' => 'Invalid Request Trade!']);
             }else{
+                // else proceed sa trade transaction.
                 $transfer = new UserHistory;
                 $transfer->sender_id = $receiver->id;
-                $transfer->receiver_id = $id;
-                $transfer->amount = Request::get('amount');
+                $transfer->receiver_id = $trader_id;
+                $transfer->amount = $selected_trade->request_amount;
                 $transfer->transaction_option = Request::get('transaction_option');
-                $transfer->currency_trade = Request::get('currency_trade');
-                $transfer->currency_request = Request::get('currency_request');
-                $your_balance->decrement(Request::get('currency_trade'), Request::get('amount'));
-                $trader_balance->increment(Request::get('currency_trade'), Request::get('amount'));
-                
-                $transfer->save();
-                return response()->json(compact('transfer'));
+                $transfer->currency_trade = $selected_trade->trade_currency;
+                $transfer->currency_request = $selected_trade->request_currency;
+
+                //1st i deduct sa imong wallet ang request amount sa creator.
+                //ang format (wallet,amount).
+                $your_balance->decrement($selected_trade->request_currency, $receiver_amount);
+
+                //2nd ma add sa creator's wallet ang gipang trade nimo(receiver) na amount.
+                $trader_balance->increment($selected_trade->request_currency, $receiver_amount);
+
+                //3rd ma add sa imong wallet(receiver) ang gi trade sa creator.
+                $your_balance->increment($selected_trade->trade_currency, $sender_amount);
+
+                //4th ma ma deduct sa creator's wallet ang ipang trade niya.
+                $trader_balance->decrement($selected_trade->trade_currency, $sender_amount);
+
+                //if good na tanan ma save sa history ang transaction then ma update anh status sa trade. i update kay ang ipa show lang kay status 1.
+                if($transfer->save()){
+                    $selected_trade->status = 0;
+                    $selected_trade->save();
+                     return response()->json(compact('transfer'));
+                }
             }
         }else{
             return response()->json(['message' => 'Incorrect Transaction Pin!']);
         }
+    }
+
+    public function test()
+    {
+        $test = UserHistory::with('user_sender')->get();
+
+        return $test;
     }
 }
