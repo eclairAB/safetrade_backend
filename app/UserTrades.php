@@ -12,7 +12,8 @@ class UserTrades extends Model
 		'request_amount',
 		'trade_amount',
 		'request_currency',
-		'trade_currency'
+		'trade_currency',
+		'status'
 	];
 
 	public function trader_info()

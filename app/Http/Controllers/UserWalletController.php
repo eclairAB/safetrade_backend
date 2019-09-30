@@ -68,7 +68,7 @@ class UserWalletController extends Controller
         
     }
 
-    public function userTranfer($id)
+    public function userTransfer($id)
     {
     	$sender = Auth::user();
         $receiver_credentials = User::find($id);
@@ -113,7 +113,7 @@ class UserWalletController extends Controller
     	if(Request::get('transaction_pin') == $sender->transaction_pin){
     		if($sender_balance[Request::get('trade_currency')] >= 0 || $sender_balance[Request::get('trade_currency')] >= 00.00){
     			if(Request::get('trade_amount') > $sender_balance[Request::get('trade_currency')]){
-    				return response()->json(['message' => 'Invalid Request Trade!']);
+    				return response()->json(['message' => 'Invalid Request Trade!'], 404);
     			}else{
     				$trade = new UserTrades;
 
@@ -124,13 +124,13 @@ class UserWalletController extends Controller
     				$trade->trade_currency = Request::get('trade_currency');
 
     				$trade->save();
-    				return response()->json(compact('trade'));
+    				return response()->json(compact('trade'), 200);
     			}
     		}else{
-    			return response()->json(['message' => 'Insufficient Balance!']);
+    			return response()->json(['message' => 'Insufficient Balance!'], 404);
     		}
     	}else{
-    		return response()->json(['message' => 'Incorrect Transaction Pin!']);
+    		return response()->json(['message' => 'Incorrect Transaction Pin!'], 404);
     	}
     }
 
