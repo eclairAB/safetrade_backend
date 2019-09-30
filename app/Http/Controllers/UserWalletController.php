@@ -107,31 +107,32 @@ class UserWalletController extends Controller
 
     public function postUserTrade()
     {
-    	$sender = Auth::user();
+       $user = Auth::user();
+       $trades = UserTrades::where('status',1)->where('user_id',$user->id)->get();
+       $get_balance = UserCurrency::where('user_id',$user->id)->first();
+   
+       if($trades->count() > 0){
 
-    	$sender_balance = UserCurrency::where('user_id',$sender->id)->first();
-    	if(Request::get('transaction_pin') == $sender->transaction_pin){
-    		if($sender_balance[Request::get('trade_currency')] >= 0 || $sender_balance[Request::get('trade_currency')] >= 00.00){
-    			if(Request::get('trade_amount') > $sender_balance[Request::get('trade_currency')]){
-    				return response()->json(['message' => 'Invalid Request Trade!']);
-    			}else{
-    				$trade = new UserTrades;
+           foreach ($trades as $trade) {
 
-    				$trade->user_id = $sender->id;
-    				$trade->request_amount = Request::get('request_amount');
-    				$trade->trade_amount = Request::get('trade_amount');
-    				$trade->request_currency = Request::get('request_currency');
-    				$trade->trade_currency = Request::get('trade_currency');
+               $wallet = $trade->trade_currency;
+               $current_wallet = number_format($get_balance->$wallet,10);
+               $amount[] = number_format($trade->request_amount, 10);
+               $data = array_sum($amount);
+           }   
 
-    				$trade->save();
-    				return response()->json(compact('trade'));
-    			}
-    		}else{
-    			return response()->json(['message' => 'Insufficient Balance!']);
-    		}
-    	}else{
-    		return response()->json(['message' => 'Incorrect Transaction Pin!']);
-    	}
+           $my_balance = number_format($current_wallet,10);
+           $my_current_trades = number_format($data,10);
+           $diff_balance = ($my_balance - $my_current_trades);
+           $onhold_balance = number_format($diff_balance,10);
+           if(Request::get('trade_amount') > $onhold_balance){
+               return response()->json(['message' => 'Currently, you have a pending trade. It will excess your balance with this transaction.']);
+           }else{
+               return $this->monitorUserTransaction();
+           }
+       }else{
+           return $this->monitorUserTransaction();
+       }
     }
 
     public function getUserTrade($id, $trader_id)
@@ -163,8 +164,8 @@ class UserWalletController extends Controller
             }else{
                 // else proceed sa trade transaction.
                 $transfer = new UserHistory;
-                $transfer->sender_id = $receiver->id;
-                $transfer->receiver_id = $trader_id;
+                $transfer->sender_id = $trader_id;
+                $transfer->receiver_id = $receiver->id;
                 $transfer->amount = $selected_trade->request_amount;
                 $transfer->transaction_option = Request::get('transaction_option');
                 $transfer->currency_trade = $selected_trade->trade_currency;
@@ -195,10 +196,92 @@ class UserWalletController extends Controller
         }
     }
 
-    public function test()
-    {
-        $test = UserHistory::with('user_sender')->get();
 
-        return $test;
+    public function checkTheTraderBalance($id)
+    {
+        //get the trader info and trader trade propose.
+        $trader = UserTrades::with('trader_info')->find($id);
+
+        //check the trader's wallet.
+        $trader_wallet = UserCurrency::where('user_id',$trader->trader_info->id)->first();
+
+        //to get the specific trader's wallet dynamically.
+        $request = $trader->request_currency;
+        $trade = $trader->trade_currency;
+
+        //pass to variable all object used in condition to make it short.
+        $trader_debit = number_format($trader->request_amount,10);
+        $trader_wal1 = number_format($trader_wallet->$request,10);
+
+        $trader_credit = number_format($trader->trade_amount,10);
+        $trader_wal2 = number_format($trader_wallet->$trade,10);
+
+        //compare the value of the user's balance to the requested amount and trade value.
+        if($trader_debit > $trader_wal1 || $trader_credit > $trader_wal2){
+            $trader->status = 0;
+            $trader->save();
+
+            return response()->json(['message' => 'Currently, the trader has have not enough balance to proceed with this transaction.']);
+        }
     }
+
+    public function monitorUserTransaction()
+    {
+        $sender = Auth::user();
+
+        $sender_balance = UserCurrency::where('user_id',$sender->id)->first();
+        if(Request::get('transaction_pin') == $sender->transaction_pin){
+            if($sender_balance[Request::get('trade_currency')] >= 0 || $sender_balance[Request::get('trade_currency')] >= 00.00){
+                if(Request::get('trade_amount') > $sender_balance[Request::get('trade_currency')]){
+                    return response()->json(['message' => 'Invalid Request Trade!']);
+                }else{
+                    $trade = new UserTrades;
+
+                    $trade->user_id = $sender->id;
+                    $trade->request_amount = Request::get('request_amount');
+                    $trade->trade_amount = Request::get('trade_amount');
+                    $trade->request_currency = Request::get('request_currency');
+                    $trade->trade_currency = Request::get('trade_currency');
+
+                    $trade->save();
+                    return response()->json(compact('trade'));
+                }
+            }else{
+                return response()->json(['message' => 'Insufficient Balance!']);
+            }
+        }else{
+            return response()->json(['message' => 'Incorrect Transaction Pin!']);
+        }
+    }
+
+
+    public function monitorUserTransfer()
+    {
+        $user = Auth::user();
+        $trades = UserTrades::where('status',1)->where('user_id',$user->id)->get();
+        $get_balance = UserCurrency::where('user_id',$user->id)->first();
+        
+        if($trades->count() > 0){
+
+            foreach ($trades as $trade) {
+
+                $wallet = $trade->trade_currency;
+                $current_wallet = number_format($get_balance->$wallet,10);
+                $amount[] = number_format($trade->request_amount, 10);
+                $data = array_sum($amount);
+            }   
+
+            $my_balance = number_format($current_wallet,10);
+            $my_current_trades = number_format($data,10);
+            $diff_balance = ($my_balance - $my_current_trades);
+            $onhold_balance = number_format($diff_balance,10);
+            if(Request::get('trade_amount') > $onhold_balance){
+                return response()->json(['message' => 'Currently, you have a pending trade. It will excess your balance with this transaction.']);
+            }else{
+                return "to be continue";
+            }
+        }else{
+            return "to be continue";
+        }
+    }    
 }
