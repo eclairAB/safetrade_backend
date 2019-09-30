@@ -32,9 +32,9 @@ Route::group(['middleware' => 'auth:api', 'cors'], function(){
 	Route::post('update/user/account/{id}', 'Auth\UserController@updateProfileAccount');
 	Route::post('update/user/pin/{id}', 'Auth\UserController@updateProfilePin');
 	// Route::post('user/trade/{id}', 'UserWalletController@postUserTrade');
-	Route::post('user/transfer/{id}', 'UserWalletController@userTranfer');
+	Route::post('user/transfer/{id}', 'UserWalletController@userTransfer');
 	Route::post('user/trade', 'UserWalletController@postUserTrade');
-	Route::post('getUser/trade/{id}/{trader_id}', 'UserWalletController@getUserTrade');
+	Route::post('getUser/trade/{id}/{trader_id}', 'UserWalletController@getUserTrade'); // first param is user_trade pk, then id of trade poster
 	Route::post('filter/byCurrency', 'ViewController@filterHistorybyCurrency');
 	Route::get('trade/list', 'ViewController@tradeList');
 });
