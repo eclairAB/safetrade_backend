@@ -17,7 +17,7 @@ class CreateUserTranfersTable extends Migration
             $table->bigIncrements('id');
             $table->integer('sender_id');
             $table->integer('receiver_id');
-            $table->double('amount', 11, 10);
+            $table->double('amount');
             $table->string('currency');
             $table->timestamps();
         });

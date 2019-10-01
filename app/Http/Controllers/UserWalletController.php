@@ -68,6 +68,7 @@ class UserWalletController extends Controller
         
     }
 
+
     public function avoidUserTransfer($id)
     {
         $sender = Auth::user();

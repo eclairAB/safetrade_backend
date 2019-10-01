@@ -16,16 +16,16 @@ class CreateUserCurrenciesTable extends Migration
         Schema::create('user_currencies', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id');
-            $table->double('btc', 11, 10);
-            $table->double('eth', 11, 10);
-            $table->double('xrp', 11, 10);
-            $table->double('ltc', 11, 10);
-            $table->double('bch', 11, 10);
-            $table->double('eos', 11, 10);
-            $table->double('bnb', 11, 10);
-            $table->double('usdt', 11, 10);
-            $table->double('bsv', 11, 10);
-            $table->double('trx', 11, 10);
+            $table->double('btc');
+            $table->double('eth');
+            $table->double('xrp');
+            $table->double('ltc');
+            $table->double('bch');
+            $table->double('eos');
+            $table->double('bnb');
+            $table->double('usdt');
+            $table->double('bsv');
+            $table->double('trx');
             $table->timestamps();
         });
     }
