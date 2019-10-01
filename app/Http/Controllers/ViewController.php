@@ -24,7 +24,7 @@ class ViewController extends Controller
     	if(empty($keyword)){
     		/*$default = UserHistory::with('user_sender','user_receiver')->where('currency_trade','btc')->orWhere('currency_request','btc')->get();*/
 
-            $default = UserHistory::with('user_sender','user_receiver')->get();
+            $default = UserHistory::with('user_sender','user_receiver')->orderBy('created_at', 'DESC')->get();
 
     		return response()->json(['results' => $default]);
     	}

@@ -14,7 +14,7 @@ class AddCashCurrencyIntoUserCurrencies extends Migration
     public function up()
     {
         Schema::table('user_currencies', function (Blueprint $table) {
-            $table->double('cash', 11, 10)->after('trx');
+            $table->double('cash')->after('trx');
         });
     }
 
