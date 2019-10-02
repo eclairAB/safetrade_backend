@@ -68,12 +68,13 @@ class UserWalletController extends Controller
         
     }
 
-    public function userTransfer($id)
+
+    public function avoidUserTransfer($id)
     {
-    	$sender = Auth::user();
+        $sender = Auth::user();
         $receiver_credentials = User::find($id);
-    	$sender_balance = UserCurrency::where('user_id',$sender->id)->first();
-    	$receiver_balance = UserCurrency::where('user_id',$id)->first();
+        $sender_balance = UserCurrency::where('user_id',$sender->id)->first();
+        $receiver_balance = UserCurrency::where('user_id',$id)->first();
         if($sender->id != $id){
             if(Request::get('transaction_pin') == $sender->transaction_pin AND Request::get('email') == $receiver_credentials->email){
                 if($sender_balance[Request::get('currency_trade')] >= 0 || $sender_balance[Request::get('currency_trade')] >= 00.00){
@@ -102,7 +103,37 @@ class UserWalletController extends Controller
             }
         }
         return response()->json(['message' => 'Invalid Request Transaction!']);
-    	
+    }
+
+    public function userTranfer($id)
+    {
+    	$user = Auth::user();
+        $trades = UserTrades::where('status',1)->where('user_id',$user->id)->get();
+        $get_balance = UserCurrency::where('user_id',$user->id)->first();
+
+        if($trades->count() > 0){
+
+            foreach ($trades as $trade) {
+                
+                $wallet = $trade->trade_currency;
+                $current_wallet = number_format($get_balance->$wallet,10);
+                $amount[] = number_format($trade->trade_amount, 10);
+                $data = array_sum($amount);
+
+            }
+
+            $my_balance = number_format($current_wallet,10);
+            $my_current_trades = number_format($data,10);
+            $diff_balance = ($my_balance - $my_current_trades);
+            $onhold_balance = number_format($diff_balance,10);
+            if(Request::get('amount') > $onhold_balance){
+                return response()->json(['message' => 'Currently, you have an active trade, proceeding this transfer will exceed your balance.']);
+            }else{
+                return $this->avoidUserTransfer($id);
+            }
+        }else{
+            return $this->avoidUserTransfer($id);
+        }
     }
 
     public function postUserTrade()
@@ -126,7 +157,7 @@ class UserWalletController extends Controller
            $diff_balance = ($my_balance - $my_current_trades);
            $onhold_balance = number_format($diff_balance,10);
            if(Request::get('trade_amount') > $onhold_balance){
-               return response()->json(['message' => 'Currently, you have a pending trade. It will excess your balance with this transaction.']);
+               return response()->json(['message' => 'Currently, you have a pending trade. It will exceed your balance with this transaction.']);
            }else{
                return $this->monitorUserTransaction();
            }
@@ -254,34 +285,13 @@ class UserWalletController extends Controller
         }
     }
 
-
-    public function monitorUserTransfer()
+    public function destroy($id)
     {
         $user = Auth::user();
-        $trades = UserTrades::where('status',1)->where('user_id',$user->id)->get();
-        $get_balance = UserCurrency::where('user_id',$user->id)->first();
-        
-        if($trades->count() > 0){
+        $usertrade = UserTrades::where('user_id',$user->id)->find($id);
 
-            foreach ($trades as $trade) {
+        $delete = $usertrade->delete();
 
-                $wallet = $trade->trade_currency;
-                $current_wallet = number_format($get_balance->$wallet,10);
-                $amount[] = number_format($trade->request_amount, 10);
-                $data = array_sum($amount);
-            }   
-
-            $my_balance = number_format($current_wallet,10);
-            $my_current_trades = number_format($data,10);
-            $diff_balance = ($my_balance - $my_current_trades);
-            $onhold_balance = number_format($diff_balance,10);
-            if(Request::get('trade_amount') > $onhold_balance){
-                return response()->json(['message' => 'Currently, you have a pending trade. It will excess your balance with this transaction.']);
-            }else{
-                return "to be continue";
-            }
-        }else{
-            return "to be continue";
-        }
+        return response()->json(['message' => 'You successfully deleted your trade post.']);
     }    
 }

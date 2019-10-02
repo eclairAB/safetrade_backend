@@ -39,6 +39,8 @@ Route::group(['middleware' => 'auth:api', 'cors'], function(){
 	Route::get('trade/list', 'ViewController@tradeList');
 	Route::get('check/trader/balance/{id}', 'UserWalletController@checkTheTraderBalance');
 	Route::post('monitor/user/transaction', 'UserWalletController@monitorUserTransaction');
+	Route::post('avoid/user/transfer/{id}','UserWalletController@avoidUserTransfer');
+	Route::delete('delete/myTrade/{id}', 'UserWalletController@destroy');
 	
 });
 
