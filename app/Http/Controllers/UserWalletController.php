@@ -168,7 +168,38 @@ class UserWalletController extends Controller
 
     public function getUserTrade($id, $trader_id)
     {
-    	//i check kung kinsa ang authenticated na user.
+    	//get the trader info and trader trade propose.
+        $trader = UserTrades::with('trader_info')->find($id);
+
+        //check the trader's wallet.
+        $trader_wallet = UserCurrency::where('user_id',$trader->trader_info->id)->first();
+
+        //to get the specific trader's wallet dynamically.
+        $request = $trader->request_currency;
+        $trade = $trader->trade_currency;
+
+        //pass to variable all object used in condition to make it short.
+        $trader_debit = number_format($trader->request_amount,10);
+        $trader_wal1 = number_format($trader_wallet->$request,10);
+
+        $trader_credit = number_format($trader->trade_amount,10);
+        $trader_wal2 = number_format($trader_wallet->$trade,10);
+
+        return response()->json(['message' => 'Currently, the trader has have not enough balance to proceed with this transaction.']);
+
+        //compare the value of the user's balance to the requested amount and trade value.
+        // if($trader_debit > $trader_wal1 || $trader_credit > $trader_wal2){
+        //     $trader->status = 0;
+        //     $trader->save();
+
+            
+        // }
+    }
+
+
+    public function checkTheTraderBalance($id)
+    {
+        //i check kung kinsa ang authenticated na user.
         //sa diri na part kung ikaw ang authenticated usually ikaw ang maka maka dawat sa trade.
         $receiver = Auth::user();
 
@@ -224,35 +255,6 @@ class UserWalletController extends Controller
             }
         }else{
             return response()->json(['message' => 'Incorrect Transaction Pin!']);
-        }
-    }
-
-
-    public function checkTheTraderBalance($id)
-    {
-        //get the trader info and trader trade propose.
-        $trader = UserTrades::with('trader_info')->find($id);
-
-        //check the trader's wallet.
-        $trader_wallet = UserCurrency::where('user_id',$trader->trader_info->id)->first();
-
-        //to get the specific trader's wallet dynamically.
-        $request = $trader->request_currency;
-        $trade = $trader->trade_currency;
-
-        //pass to variable all object used in condition to make it short.
-        $trader_debit = number_format($trader->request_amount,10);
-        $trader_wal1 = number_format($trader_wallet->$request,10);
-
-        $trader_credit = number_format($trader->trade_amount,10);
-        $trader_wal2 = number_format($trader_wallet->$trade,10);
-
-        //compare the value of the user's balance to the requested amount and trade value.
-        if($trader_debit > $trader_wal1 || $trader_credit > $trader_wal2){
-            $trader->status = 0;
-            $trader->save();
-
-            return response()->json(['message' => 'Currently, the trader has have not enough balance to proceed with this transaction.']);
         }
     }
 

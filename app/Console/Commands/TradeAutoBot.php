@@ -54,9 +54,8 @@ class TradeAutoBot extends Command
 
                 $the_chosen_one = $possible_trade_amount[$test_index];
                 if($the_chosen_one > $bot_wallet->$wallet){
-                    echo "kulang ang balance". "\n";
+                    $this->line('Insufficient Balance!');
                 }else{
-                    echo "okay ang balance". "\n";
                     $trades->user_id = $bot_wallet->user_id;
                     $trades->request_amount = $the_chosen_one;
                     $trades->trade_amount = $the_chosen_one;
@@ -104,9 +103,8 @@ class TradeAutoBot extends Command
 
                     $the_chosen_one = $possible_trade_amount[$test_index];
                     if($the_chosen_one > $bot_wallet->$wallet){
-                        echo "kulang ang balance". "\n";
+                        $this->line('Insufficient Balance!');
                     }else{
-                        echo "okay ang balance". "\n";
                         $trades->user_id = $bot_wallet->user_id;
                         $trades->request_amount = $the_chosen_one;
                         $trades->trade_amount = $the_chosen_one;
