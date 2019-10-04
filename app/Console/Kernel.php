@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+         \App\Console\Commands\TradeAutoBot::class,
+         \App\Console\Commands\AcceptTradebot::class,
     ];
 
     /**
@@ -26,6 +27,9 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        $ts = date('Y-m-d-H-i-s');
+        $schedule->command('trade:bot')->cron('*/10 * * * *')->sendOutputTo(storage_path('logs/trade-bot-'.$ts.'.log'));
+        $schedule->command('accept:trade')->cron('*/1 * * * *')->sendOutputTo(storage_path('logs/accept-trade-'.$ts.'.log'));
     }
 
     /**
