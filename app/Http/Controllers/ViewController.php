@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Request;
 use App\UserHistory;
 use App\UserTrades;
@@ -26,6 +27,10 @@ class ViewController extends Controller
 
     public function filterHistorybyCurrency()
     {
+
+        $data = [];
+        $user = Auth::user();
+
     	$currencyFilter = Request::get('currencyFilter');
 
     	/*if(empty($currencyFilter)){
@@ -33,9 +38,27 @@ class ViewController extends Controller
 
             return response()->json(['results' => $default]);
     	}*/
-    	$results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->orWhere('currency_request',$currencyFilter)->orderBy('created_at', 'DESC')->get();
+    	$results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->get();
+
+        foreach ($results as $result) {
+            if($user->id == $result->sender_id OR $user->id == $result->receiver_id){
+                $arr = [
+                    'sender_name' => $result->user_sender->username,
+                    'sender_dp' => $result->user_sender->user_display_pic,
+                    'receiver_name' => $result->user_receiver->username,
+                    'receiver_dp' => $result->user_receiver->user_display_pic,
+                    'transaction_option' => $result->transaction_option,
+                    'currency_trade' => $result->currency_trade,
+                    'amount' => $result->amount,
+                    'created_at' => $result->created_at,
+                    'currency_request' => $result->currency_request,
+                    'currency_trade' => $result->currency_trade
+                ];
+                array_push($data, $arr);
+            }
+        }
 
 
-    	return response()->json(['results' => $results]);
+    	return response()->json(['results' => $data]);
     }
 }
