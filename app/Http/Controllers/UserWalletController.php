@@ -168,36 +168,47 @@ class UserWalletController extends Controller
 
     public function getUserTrade($id, $trader_id)
     {
-    	//get the trader info and trader trade propose.
-        $trader = UserTrades::with('trader_info')->find($id);
+        // SENDER PART START
+            //get the trader info and trader trade propose.
+            $trader = UserTrades::with('trader_info')->find($id);
 
-        //check the trader's wallet.
-        $trader_wallet = UserCurrency::where('user_id',$trader->trader_info->id)->first();
+            //check the trader's wallet.
+            $trader_wallet = UserCurrency::where('user_id',$trader->trader_info->id)->first();
 
-        //to get the specific trader's wallet dynamically.
-        $request = $trader->request_currency;
-        $trade = $trader->trade_currency;
+            //to get the specific trader's wallet dynamically.
+            $request = $trader->request_currency;
+            $trade = $trader->trade_currency;
 
-        //pass to variable all object used in condition to make it short.
-        $trader_debit = number_format($trader->request_amount,10);
-        $trader_wal1 = number_format($trader_wallet->$request,10);
+            //pass to variable all object used in condition to make it short.
+            $trader_debit = number_format($trader->request_amount,10);
+            $trader_wal1 = number_format($trader_wallet->$request,10);
 
-        $trader_credit = number_format($trader->trade_amount,10);
-        $trader_wal2 = number_format($trader_wallet->$trade,10);
+            $trader_credit = number_format($trader->trade_amount,10);
+            $trader_wal2 = number_format($trader_wallet->$trade,10);
 
-        return response()->json(['message' => 'Currently, the trader has have not enough balance to proceed with this transaction.']);
+        // SENDER PART END
 
+        // RECEIVER PART START
+            //get the user info.
+            $user = Auth::user();
+            $receiver = UserCurrency::where('user_id',$user->id)->first();
+
+            $receiver_credit = number_format($receiver->$request,10);
+        // RECEIVER PART END
+        
         //compare the value of the user's balance to the requested amount and trade value.
-        // if($trader_debit > $trader_wal1 || $trader_credit > $trader_wal2){
-        //     $trader->status = 0;
-        //     $trader->save();
-
-            
-        // }
+        //if request_amount > balance OR trade_amount > balance
+        if($trader_debit > $trader_wal1 || $trader_credit > $trader_wal2){
+            return response()->json(['message' => 'Currently, the trader has have not enough balance to proceed with this transaction.']);
+        }elseif($trader_debit > $receiver_credit){
+            return response()->json(['message' => 'You dont have enough balance to proceed this transaction.']);
+        }else{
+            return $this->checkTheTraderBalance($id, $trader_id);
+        }
     }
 
 
-    public function checkTheTraderBalance($id)
+    public function checkTheTraderBalance($id, $trader_id)
     {
         //i check kung kinsa ang authenticated na user.
         //sa diri na part kung ikaw ang authenticated usually ikaw ang maka maka dawat sa trade.
