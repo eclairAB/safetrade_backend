@@ -17,6 +17,13 @@ class ViewController extends Controller
 		return response()->json($trades);
 	}
 
+    public function tradeListDashboard()
+    {
+        $trades = UserTrades::with('trader_info')->where('status', 1)->take(3)->get();
+
+        return response()->json($trades);
+    }
+
     public function filterHistorybyCurrency()
     {
     	$currencyFilter = Request::get('currencyFilter');

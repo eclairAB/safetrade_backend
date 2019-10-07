@@ -105,7 +105,7 @@ class UserWalletController extends Controller
         return response()->json(['message' => 'Invalid Request Transaction!']);
     }
 
-    public function userTranfer($id)
+    public function userTransfer($id)
     {
     	$user = Auth::user();
         $trades = UserTrades::where('status',1)->where('user_id',$user->id)->get();
@@ -290,10 +290,17 @@ class UserWalletController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        $usertrade = UserTrades::where('user_id',$user->id)->find($id);
 
-        $delete = $usertrade->delete();
+        if(Request::get('transaction_pin') == $user->transaction_pin) {
+            
+            $usertrade = UserTrades::where('user_id',$user->id)->find($id);
 
-        return response()->json(['message' => 'You successfully deleted your trade post.']);
-    }    
+            $delete = $usertrade->delete();
+
+            return response()->json(['message' => 'You successfully deleted your trade post.']);
+        }
+        else {
+            return response()->json(['message' => 'Incorrect Transaction Pin!']);
+        }
+    }
 }

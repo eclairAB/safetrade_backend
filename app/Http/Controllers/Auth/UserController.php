@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
+// use Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\UserCurrency;
@@ -113,61 +114,92 @@ class UserController extends Controller {
 
   public function updateProfilePicture(Request $request, $id)
   {
-    $validator = Validator::make($request->all(), [ 
-      'user_display_pic' => 'required',
-    ]);
-    if ($validator->fails()) { 
-      return response()->json(['error'=>$validator->errors()], 401);            
+    $user = Auth::user();
+
+    if($request->transaction_pin == $user->transaction_pin) {
+      $validator = Validator::make($request->all(), [ 
+        'user_display_pic' => 'required',
+      ]);
+      if ($validator->fails()) { 
+        return response()->json(['error'=>$validator->errors()], 401);            
+      }
+
+      $user = User::find($id);
+      $user->user_display_pic = $request->input('user_display_pic');
+      $user->save();
+
+      return response()->json(compact('user'));
     }
-
-    $user = User::find($id);
-    $user->user_display_pic = $request->input('user_display_pic');
-    $user->save();
-
-    return response()->json(compact('user'));
+    else return response()->json(['message' => 'Incorrect Transaction Pin!']);
   }
 
   public function updateProfileBasic(Request $request, $id)
   {
-    $validator = Validator::make($request->all(), [ 
-      'name_first' => 'required',
-      'name_last' => 'required',
-      'contact_no' => 'required',
-      'birth_date' => 'required',
-      'zip_code' => 'required',
-      'city' => 'required',
-      'address' => 'required',
-      'country' => 'required',
-      'state' => 'required'
-    ]);
-    if ($validator->fails()) { 
-      return response()->json(['error'=>$validator->errors()], 401);            
+    $user = Auth::user();
+
+    if($request->transaction_pin == $user->transaction_pin) {
+      $validator = Validator::make($request->all(), [ 
+        'name_first' => 'required',
+        'name_last' => 'required',
+        'contact_no' => 'required',
+        'birth_date' => 'required',
+        'zip_code' => 'required',
+        'city' => 'required',
+        'address' => 'required',
+        'country' => 'required',
+        'state' => 'required'
+      ]);
+      if ($validator->fails()) { 
+        return response()->json(['error'=>$validator->errors()], 401);            
+      }
+
+      $user = User::find($id);
+
+      $user->name_first = $request->input('name_first');
+      $user->name_last = $request->input('name_last');
+      $user->contact_no = $request->input('contact_no');
+      $user->birth_date = $request->input('birth_date');
+      $user->zip_code = $request->input('zip_code');
+      $user->city = $request->input('city');
+      $user->address = $request->input('address');
+      $user->country = $request->input('country');
+      $user->state = $request->input('state');
+
+      $user->save();
+
+      return response()->json(compact('user'));
     }
-
-    $user = User::find($id);
-
-    $user->name_first = $request->input('name_first');
-    $user->name_last = $request->input('name_last');
-    $user->contact_no = $request->input('contact_no');
-    $user->birth_date = $request->input('birth_date');
-    $user->zip_code = $request->input('zip_code');
-    $user->city = $request->input('city');
-    $user->address = $request->input('address');
-    $user->country = $request->input('country');
-    $user->state = $request->input('state');
-
-    $user->save();
-
-    return response()->json(compact('user'));
+    else return response()->json(['message' => 'Incorrect Transaction Pin!']);
   }
 
   public function updateProfileAccount(Request $request, $id)
   {
-    $users = User::find($id);
-      if(empty($request->password)){
-        $validator = Validator::make($request->all(), [ 
-          'username' => 'required', 
-          'email' => 'required|email'
+    $user = Auth::user();
+
+    if($request->transaction_pin == $user->transaction_pin) {
+      $users = User::find($id);
+        if(empty($request->password)){
+          $validator = Validator::make($request->all(), [ 
+            'username' => 'required', 
+            'email' => 'required|email'
+          ]);
+          if ($validator->fails()) { 
+            return response()->json(['error'=>$validator->errors()], 401);            
+          }
+
+          $user = User::find($id);
+          $user->username = $request->input('username');
+          $user->email = $request->input('email');
+          $user->save();
+
+          return response()->json(compact('user'));
+        }
+        else{
+          $validator = Validator::make($request->all(), [ 
+            'username' => 'required', 
+            'email' => 'required|email', 
+            'password' => 'required', 
+            'c_password' => 'required|same:password'  
         ]);
         if ($validator->fails()) { 
           return response()->json(['error'=>$validator->errors()], 401);            
@@ -176,29 +208,13 @@ class UserController extends Controller {
         $user = User::find($id);
         $user->username = $request->input('username');
         $user->email = $request->input('email');
+        $user->password = bcrypt($request->input('password'));
         $user->save();
 
         return response()->json(compact('user'));
       }
-      else{
-        $validator = Validator::make($request->all(), [ 
-          'username' => 'required', 
-          'email' => 'required|email', 
-          'password' => 'required', 
-          'c_password' => 'required|same:password'  
-      ]);
-      if ($validator->fails()) { 
-        return response()->json(['error'=>$validator->errors()], 401);            
-      }
-
-      $user = User::find($id);
-      $user->username = $request->input('username');
-      $user->email = $request->input('email');
-      $user->password = bcrypt($request->input('password'));
-      $user->save();
-
-      return response()->json(compact('user'));
     }
+    else return response()->json(['message' => 'Incorrect Transaction Pin!']);
   }
 
   public function updateProfilePin(Request $request, $id)
