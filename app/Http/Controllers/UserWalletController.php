@@ -8,6 +8,7 @@ use App\UserTrades;
 use App\UserTranfer;
 use App\UserHistory;
 use App\UserCurrency;
+use App\Events\ExampleEvent;
 use Auth;
 use DB;
 
@@ -289,6 +290,7 @@ class UserWalletController extends Controller
 
                     $trade->save();
                     return response()->json(compact('trade'));
+                    event(new ExampleEvent($trade));
                 }
             }else{
                 return response()->json(['message' => 'Insufficient Balance!']);

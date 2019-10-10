@@ -6,12 +6,12 @@ window._ = require('lodash');
  * code may be modified to fit the specific needs of your application.
  */
 
-try {
+/*try {
     window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
 
     require('bootstrap');
-} catch (e) {}
+} catch (e) {}*/
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -29,13 +29,13 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  * a simple convenience so we don't have to attach every token manually.
  */
 
-let token = document.head.querySelector('meta[name="csrf-token"]');
+/*let token = document.head.querySelector('meta[name="csrf-token"]');
 
 if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 } else {
     console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
-}
+}*/
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
@@ -53,3 +53,11 @@ if (token) {
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+/*import Echo from 'laravel-echo'
+
+window.io = require('socket.io-client');
+window.Echo = new Echo({
+    broadcaster: 'socket.io',
+    host: window.location.hostname + ':6001'
+}); */
