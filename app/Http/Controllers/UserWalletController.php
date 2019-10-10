@@ -289,8 +289,10 @@ class UserWalletController extends Controller
                     $trade->trade_currency = Request::get('trade_currency');
 
                     $trade->save();
-                    return response()->json(compact('trade'));
+
+                    // broadcast(new ExampleEvent($trade));
                     event(new ExampleEvent($trade));
+                    return response()->json(compact('trade'));
                 }
             }else{
                 return response()->json(['message' => 'Insufficient Balance!']);

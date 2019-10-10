@@ -2,8 +2,7 @@
 
 namespace App\Events;
 
-use Log;
-use App\UserCurrency;
+use App\UserTrades;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -16,27 +15,25 @@ class ExampleEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $data = [];
+    // public $userTrades = [];
+    public $userTrades;
 
    
-    public function __construct(UserCurrency $userCurrency)
+    public function __construct($userTrades)
     {
-       // $this->payload = $payload;
-        $this->data = [
-            'userCurrency' => $userCurrency,
-        ];
-        Log::info('hey something just happened')
+        $this->userTrades = $userTrades;
+        // $this->data = [
+        //     'userTrades' => $userTrades,
+        // ];
     }
 
     public function broadcastOn()
     {
-        Log::info('hey something just happened')
-        return new Channel('laravel_database_channelname' . $this->data['userCurrency']);
+        return new Channel('laravel_database_channelname'/* . $this->data['userTrades']*/);
     }
 
     public function broadcastAs()
     {
-        Log::info('hey something just happened')
         return 'examplee';
     }
 }

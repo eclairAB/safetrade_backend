@@ -6,6 +6,7 @@ use Auth;
 use Request;
 use App\UserHistory;
 use App\UserTrades;
+use App\Events\ExampleEvent;
 use Illuminate\Support\Facades\DB;
 
 class ViewController extends Controller
@@ -13,9 +14,15 @@ class ViewController extends Controller
 
 	public function tradeList()
 	{
+        $uTrades = new UserTrades;
 		$trades = UserTrades::with('trader_info')->where('status', 1)->get();
+        $uTrades = $trades;
+        // $uTrades->save();
 
-		return response()->json($trades);
+
+        broadcast(new ExampleEvent($uTrades));
+		return response()->json($uTrades);
+        // return $uTrades;
 	}
 
     public function tradeListDashboard()
