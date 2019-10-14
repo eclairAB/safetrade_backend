@@ -8,7 +8,7 @@ use App\UserTrades;
 use App\UserTranfer;
 use App\UserHistory;
 use App\UserCurrency;
-use App\Events\ExampleEvent;
+use App\Events\TradePosted;
 use Auth;
 use DB;
 
@@ -290,8 +290,7 @@ class UserWalletController extends Controller
 
                     $trade->save();
 
-                    // broadcast(new ExampleEvent($trade));
-                    event(new ExampleEvent($trade));
+                    event(new TradePosted($trade));
                     return response()->json(compact('trade'));
                 }
             }else{
