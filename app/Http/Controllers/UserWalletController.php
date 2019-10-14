@@ -228,44 +228,48 @@ class UserWalletController extends Controller
         //checker kung unsa ang gusto sa wallet sa creator ug trade.
         $trader_wallet_currency = $selected_trade->trade_currency;
 
-        //1st for security purpose mag input ug transaction pin para maka trade kung mali Incorrect Transaction Pin!.
-        if(Request::get('transaction_pin') == $receiver->transaction_pin){
-            
-            //2nd pag ang itrade sa sender na value kay greater than sa imong balance(receiver) Invalid Request Trade!
-            if(number_format($selected_trade->trade_amount,10) > $your_balance[$trader_wallet_currency]){
-                return response()->json(['message' => 'Invalid Request Trade!']);
-            }else{
-                // else proceed sa trade transaction.
-                $transfer = new UserHistory;
-                $transfer->sender_id = $trader_id;
-                $transfer->receiver_id = $receiver->id;
-                $transfer->amount = $selected_trade->request_amount;
-                $transfer->transaction_option = Request::get('transaction_option');
-                $transfer->currency_trade = $selected_trade->trade_currency;
-                $transfer->currency_request = $selected_trade->request_currency;
-
-                //1st i deduct sa imong wallet ang request amount sa creator.
-                //ang format (wallet,amount).
-                $your_balance->decrement($selected_trade->request_currency, $receiver_amount);
-
-                //2nd ma add sa creator's wallet ang gipang trade nimo(receiver) na amount.
-                $trader_balance->increment($selected_trade->request_currency, $receiver_amount);
-
-                //3rd ma add sa imong wallet(receiver) ang gi trade sa creator.
-                $your_balance->increment($selected_trade->trade_currency, $sender_amount);
-
-                //4th ma ma deduct sa creator's wallet ang ipang trade niya.
-                $trader_balance->decrement($selected_trade->trade_currency, $sender_amount);
-
-                //if good na tanan ma save sa history ang transaction then ma update anh status sa trade. i update kay ang ipa show lang kay status 1.
-                if($transfer->save()){
-                    $selected_trade->status = 0;
-                    $selected_trade->save();
-                     return response()->json(compact('transfer'));
-                }
-            }
+        if($selected_trade->user_id == 3 OR $selected_trade->user_id == 4 OR $selected_trade->user_id == 5 OR $selected_trade->user_id == 6 OR $selected_trade->user_id == 7){
+            return response()->json(['message' => 'This trade is already acquired by other user.']);
         }else{
-            return response()->json(['message' => 'Incorrect Transaction Pin!']);
+            //1st for security purpose mag input ug transaction pin para maka trade kung mali Incorrect Transaction Pin!.
+            if(Request::get('transaction_pin') == $receiver->transaction_pin){
+                
+                //2nd pag ang itrade sa sender na value kay greater than sa imong balance(receiver) Invalid Request Trade!
+                if(number_format($selected_trade->trade_amount,10) > $your_balance[$trader_wallet_currency]){
+                    return response()->json(['message' => 'Invalid Request Trade!']);
+                }else{
+                    // else proceed sa trade transaction.
+                    $transfer = new UserHistory;
+                    $transfer->sender_id = $trader_id;
+                    $transfer->receiver_id = $receiver->id;
+                    $transfer->amount = $selected_trade->request_amount;
+                    $transfer->transaction_option = Request::get('transaction_option');
+                    $transfer->currency_trade = $selected_trade->trade_currency;
+                    $transfer->currency_request = $selected_trade->request_currency;
+
+                    //1st i deduct sa imong wallet ang request amount sa creator.
+                    //ang format (wallet,amount).
+                    $your_balance->decrement($selected_trade->request_currency, $receiver_amount);
+
+                    //2nd ma add sa creator's wallet ang gipang trade nimo(receiver) na amount.
+                    $trader_balance->increment($selected_trade->request_currency, $receiver_amount);
+
+                    //3rd ma add sa imong wallet(receiver) ang gi trade sa creator.
+                    $your_balance->increment($selected_trade->trade_currency, $sender_amount);
+
+                    //4th ma ma deduct sa creator's wallet ang ipang trade niya.
+                    $trader_balance->decrement($selected_trade->trade_currency, $sender_amount);
+
+                    //if good na tanan ma save sa history ang transaction then ma update anh status sa trade. i update kay ang ipa show lang kay status 1.
+                    if($transfer->save()){
+                        $selected_trade->status = 0;
+                        $selected_trade->save();
+                        return response()->json(compact('transfer'));
+                    }
+                }
+            }else{
+                return response()->json(['message' => 'Incorrect Transaction Pin!']);
+            }
         }
     }
 
