@@ -244,6 +244,7 @@ class UserWalletController extends Controller
                     $transfer->sender_id = $trader_id;
                     $transfer->receiver_id = $receiver->id;
                     $transfer->amount = $selected_trade->request_amount;
+                    $transfer->amount_two = $selected_trade->trade_amount;
                     $transfer->transaction_option = Request::get('transaction_option');
                     $transfer->currency_trade = $selected_trade->trade_currency;
                     $transfer->currency_request = $selected_trade->request_currency;

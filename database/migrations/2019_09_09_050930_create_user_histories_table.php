@@ -18,8 +18,9 @@ class CreateUserHistoriesTable extends Migration
             $table->bigInteger('sender_id');
             $table->bigInteger('receiver_id');
             $table->double('amount');
+            $table->double('amount_two')->nullable();
             $table->string('transaction_option');
-            $table->string('currency_trade');
+            $table->string('currency_trade')->nullable();
             $table->string('currency_request')->nullable();
             $table->timestamps();
         });

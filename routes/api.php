@@ -45,6 +45,7 @@ Route::group(['middleware' => 'auth:api', 'cors'], function(){
 
 	Route::post('wallet/create', 'URequestController@createRequest');
 	Route::post('wallet/list', 'URequestController@getRequests');
+	Route::post('wallet/approve', 'URequestController@approveRequest');
 });
 
 Route::group(['namespace' => 'Auth', 'middleware' => 'auth:api', 'prefix' => 'password'], function () {    
