@@ -42,7 +42,10 @@ Route::group(['middleware' => 'auth:api', 'cors'], function(){
 	Route::post('monitor/user/transaction', 'UserWalletController@monitorUserTransaction');
 	Route::post('avoid/user/transfer/{id}','UserWalletController@avoidUserTransfer');
 	Route::post('delete/myTrade/{id}', 'UserWalletController@destroy');
-	
+
+	Route::post('wallet/create', 'URequestController@createRequest');
+	Route::post('wallet/list', 'URequestController@getRequests');
+	Route::post('wallet/approve', 'URequestController@approveRequest');
 });
 
 Route::group(['namespace' => 'Auth', 'middleware' => 'auth:api', 'prefix' => 'password'], function () {    

@@ -38,7 +38,7 @@ class ViewController extends Controller
 
             return response()->json(['results' => $default]);
     	}*/
-    	$results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->get();
+    	$results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->orWhere('currency_request',$currencyFilter)->get();
 
         foreach ($results as $result) {
             if($user->id == $result->sender_id OR $user->id == $result->receiver_id){
