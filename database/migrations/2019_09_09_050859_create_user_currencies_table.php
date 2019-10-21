@@ -16,6 +16,7 @@ class CreateUserCurrenciesTable extends Migration
         Schema::create('user_currencies', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id');
+            $table->double('cash_bal');
             $table->double('btc');
             $table->double('eth');
             $table->double('xrp');

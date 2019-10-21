@@ -9,6 +9,7 @@ class UserCurrency extends Model
     protected $table = 'user_currencies';
     protected $fillable = [
         'user_id',
+        'cash_bal',
 		'btc',
 		'eth',
 		'xrp',

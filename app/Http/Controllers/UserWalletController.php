@@ -21,6 +21,7 @@ class UserWalletController extends Controller
     	$user_currency = UserCurrency::with('user')->where('user_id',$sender->id)->first();
 
         $array = [
+            'cash_bal' => number_format($user_currency->cash_bal, 10),
             'btc' => number_format($user_currency->btc, 10),
             'eth' => number_format($user_currency->eth, 10),
             'xrp' => number_format($user_currency->xrp, 10),
