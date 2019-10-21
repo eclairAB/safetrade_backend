@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\UserCurrency;
 use App\UserHistory;
 use App\UserRequest;
+use App\UserTrades;
 use Auth;
 use DB;
 use Input;
@@ -15,13 +16,35 @@ class URequestController extends Controller
 {
   public function createRequest () {
     $user = Auth::user();
+    $id_user = Request::get('user_id');
+    $amount = Request::get('amount');
+    $currency = strtolower(Request::get('currency'));
 
     if(Request::get('transaction_pin') == $user->transaction_pin) {
       
-      $request = Request::all();
-      $data = UserRequest::create($request);
+      if(Request::get('type') == 'Reload'){
 
-      return response()->json(compact('data'));
+        $request = Request::all();
+        $data = UserRequest::create($request);
+        return response()->json(compact('data'));
+      }
+      else {
+
+        $minuend = UserCurrency::where('id', $id_user)->first();
+        $difference = number_format($minuend->$currency,10) - number_format($amount,10);
+
+        if($difference >= 0) {
+
+          if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $user->id)) {
+
+            $request = Request::all();
+            $data = UserRequest::create($request);
+            return response()->json(compact('data'));
+          }
+          else return response()->json(['message' => 'Trades Pending']);
+        }
+        return response()->json(['message' => 'Insufficient user balance']);
+      }
     }
     else return response()->json(['message' => 'Incorrect Transaction Pin!']);
   }
@@ -74,12 +97,16 @@ class URequestController extends Controller
 
         if($difference >= 0) {
 
-          DB::table('user_currencies')->where('id', $id_user)->update([$currency => $difference]);
-          UserRequest::where('id', '=', $id_request)->delete();
+          if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $id_user)) {
 
-          $this->addToHistory($id_user, $amount, $type, $currency);
+            DB::table('user_currencies')->where('id', $id_user)->update([$currency => $difference]);
+            UserRequest::where('id', '=', $id_request)->delete();
 
-          return response()->json(['message' => 'withdraw success']);
+            $this->addToHistory($id_user, $amount, $type, $currency);
+
+            return response()->json(['message' => 'withdraw success']);
+          }
+          else return response()->json(['message' => 'Trades Pending']);
         }
         return response()->json(['message' => 'Insufficient user balance']);
       }
@@ -98,5 +125,19 @@ class URequestController extends Controller
     $userHistory->currency_request = $currency;
 
     $userHistory->save();
+  }
+
+  public function ifAllowWithdraw ($amount, $balance, $currency, $id_user) {
+
+    // will return true if pending trade amount is not greater than request amount for withdraw
+
+    $userTrade = UserTrades::where('user_id', $id_user)->where('trade_currency', $currency)->get();
+    $arr = [];
+    
+    foreach ($userTrade as $item) {
+      array_push($arr, $item->trade_amount);
+    } 
+    $pendingTotal = $balance - array_sum($arr);
+    return $amount > $pendingTotal ? false : true;
   }
 }
