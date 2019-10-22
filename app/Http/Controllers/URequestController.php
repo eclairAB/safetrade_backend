@@ -32,7 +32,7 @@ class URequestController extends Controller
 
         if($this->ifBalanceAvailable($minuend, $currency, $amount)) {
 
-          if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $user->id)) {
+          if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $user->id, true)) {
 
             $request = Request::all();
             $data = UserRequest::create($request);
@@ -84,7 +84,7 @@ class URequestController extends Controller
         DB::table('user_currencies')->where('id', $id_user)->update([$currency => $sum]);
         UserRequest::where('id', '=', $id_request)->delete();
 
-        $this->addToHistory($id_user, $amount, $type, $currency);
+        $this->addToHistory($id_user, $amount, $type, $currency); // adds to transaction to history
 
         return response()->json(['message' => 'reload success']);
       }
@@ -92,12 +92,14 @@ class URequestController extends Controller
 
         if($this->ifBalanceAvailable($minuend, $currency, $amount)) {
 
-          if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $id_user)) {
+          if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $id_user, false)) {
+
+            $difference = number_format($minuend->$currency,10) - number_format($amount,10);
 
             DB::table('user_currencies')->where('id', $id_user)->update([$currency => $difference]);
             UserRequest::where('id', '=', $id_request)->delete();
 
-            $this->addToHistory($id_user, $amount, $type, $currency);
+            $this->addToHistory($id_user, $amount, $type, $currency); // adds to transaction to history
 
             return response()->json(['message' => 'withdraw success']);
           }
@@ -109,6 +111,17 @@ class URequestController extends Controller
     else return response()->json(['message' => 'Incorrect Transaction Pin!']);
   }
 
+
+  /*public function deleteRequest () {
+
+    DB::table('user_currencies')->where('id', $id_user)->update([$currency => $sum]);
+    UserRequest::where('id', '=', $id_request)->delete();
+
+    $this->addToHistory($id_user, $amount, $type, $currency);
+
+    return response()->json(['message' => 'reload success']);
+  }*/
+// ------------------------------------------------------------------------------------------------
 
   public function addToHistory ($receiver_id, $amount, $type, $currency) {
 
@@ -130,7 +143,7 @@ class URequestController extends Controller
     return $difference >= 0 ? true : false;
   }
 
-  public function ifAllowWithdraw ($amount, $balance, $currency, $id_user) {
+  public function ifAllowWithdraw ($amount, $balance, $currency, $id_user, $isCreate) {
 
     // will return true if pending trade amount is not greater than request amount for withdraw
 
@@ -141,9 +154,11 @@ class URequestController extends Controller
     foreach ($userTrade as $item) {
       array_push($arr, $item->trade_amount);
     }
-    foreach ($userRequest as $item) {
-      array_push($arr, $item->amount);
-    } 
+    if ($isCreate) {
+      foreach ($userRequest as $item) {
+        array_push($arr, $item->amount);
+      } 
+    }
     $pendingTotal = $balance - array_sum($arr);
     return $pendingTotal >= $amount ? true : false;
   }
