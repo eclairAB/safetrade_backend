@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-// use Illuminate\Http\Request;
 use App\UserCurrency;
 use App\UserHistory;
 use App\UserRequest;
@@ -19,9 +18,10 @@ class URequestController extends Controller
     $id_user = Request::get('user_id');
     $amount = Request::get('amount');
     $currency = strtolower(Request::get('currency'));
+    $minuend = UserCurrency::where('id', $id_user)->first();
 
     if(Request::get('transaction_pin') == $user->transaction_pin) {
-      
+
       if(Request::get('type') == 'Reload'){
 
         $request = Request::all();
@@ -30,10 +30,7 @@ class URequestController extends Controller
       }
       else {
 
-        $minuend = UserCurrency::where('id', $id_user)->first();
-        $difference = number_format($minuend->$currency,10) - number_format($amount,10);
-
-        if($difference >= 0) {
+        if($this->ifBalanceAvailable($minuend, $currency, $amount)) {
 
           if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $user->id)) {
 
@@ -75,6 +72,7 @@ class URequestController extends Controller
     $currency = strtolower(Request::get('currency'));
     $amount = Request::get('amount');
     $type = Request::get('type');
+    $minuend = UserCurrency::where('id', $id_user)->first();
 
     if(Request::get('transaction_pin') == $user->transaction_pin) {
 
@@ -92,10 +90,7 @@ class URequestController extends Controller
       }
       else {
 
-        $minuend = UserCurrency::where('id', $id_user)->first();
-        $difference = number_format($minuend->$currency,10) - number_format($amount,10);
-
-        if($difference >= 0) {
+        if($this->ifBalanceAvailable($minuend, $currency, $amount)) {
 
           if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $id_user)) {
 
@@ -127,17 +122,29 @@ class URequestController extends Controller
     $userHistory->save();
   }
 
+  public function ifBalanceAvailable ($minuend, $currency, $subtrahend) {
+
+    // will return true if requested amount for withdraw is not greater than wallet balance
+
+    $difference = number_format($minuend->$currency,10) - number_format($subtrahend,10);
+    return $difference >= 0 ? true : false;
+  }
+
   public function ifAllowWithdraw ($amount, $balance, $currency, $id_user) {
 
     // will return true if pending trade amount is not greater than request amount for withdraw
 
     $userTrade = UserTrades::where('user_id', $id_user)->where('trade_currency', $currency)->get();
+    $userRequest = UserRequest::where('user_id', $id_user)->where('currency', $currency)->get();
     $arr = [];
     
     foreach ($userTrade as $item) {
       array_push($arr, $item->trade_amount);
+    }
+    foreach ($userRequest as $item) {
+      array_push($arr, $item->amount);
     } 
     $pendingTotal = $balance - array_sum($arr);
-    return $amount > $pendingTotal ? false : true;
+    return $pendingTotal >= $amount ? true : false;
   }
 }
