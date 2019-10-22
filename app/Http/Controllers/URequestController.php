@@ -112,15 +112,17 @@ class URequestController extends Controller
   }
 
 
-  /*public function deleteRequest () {
+  public function deleteRequest () {
 
-    DB::table('user_currencies')->where('id', $id_user)->update([$currency => $sum]);
-    UserRequest::where('id', '=', $id_request)->delete();
+    $user = Auth::user();
+    if(Request::get('transaction_pin') == $user->transaction_pin) {
+      
+      UserRequest::where('id', '=', Request::get('id'))->delete();
+      return response()->json(['message' => 'deleted']);
+    }
+    else return response()->json(['message' => 'Incorrect Transaction Pin!']);
+  }
 
-    $this->addToHistory($id_user, $amount, $type, $currency);
-
-    return response()->json(['message' => 'reload success']);
-  }*/
 // ------------------------------------------------------------------------------------------------
 
   public function addToHistory ($receiver_id, $amount, $type, $currency) {
