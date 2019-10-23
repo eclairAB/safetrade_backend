@@ -78,11 +78,15 @@ class URequestController extends Controller
 
       if($type == 'Reload'){
 
-        $userCurrency->increment($currency, $amount);
-        UserRequest::where('id', '=', $id_request)->delete();
+        if($this->ifAdminBalanceAvailable($currency, $amount)) {
 
-        $this->addToHistory($id_user, $amount, $type, $currency); // adds to transaction to history
-        return response()->json(['message' => 'reload success']);
+          $userCurrency->increment($currency, $amount);
+          UserRequest::where('id', '=', $id_request)->delete();
+
+          $this->addToHistory($id_user, $amount, $type, $currency); // adds to transaction to history
+          return response()->json(['message' => 'reload success']);
+        }
+        return response()->json(['message' => 'Admin balance insufficient']);
       }
       else {
 
@@ -118,7 +122,7 @@ class URequestController extends Controller
 
 // ------------------------------------------------------------------------------------------------
 
-  public function addToHistory ($receiver_id, $amount, $type, $currency) {
+  function addToHistory ($receiver_id, $amount, $type, $currency) {
 
     $userHistory = new UserHistory;
     $userHistory->sender_id = 1;
@@ -130,7 +134,7 @@ class URequestController extends Controller
     $userHistory->save();
   }
 
-  public function ifBalanceAvailable ($minuend, $currency, $subtrahend) {
+  function ifBalanceAvailable ($minuend, $currency, $subtrahend) {
 
     // will return true if requested amount for withdraw is not greater than wallet balance
 
@@ -138,7 +142,17 @@ class URequestController extends Controller
     return $difference >= 0 ? true : false;
   }
 
-  public function ifAllowWithdraw ($amount, $balance, $currency, $id_user, $isCreate) {
+  function ifAdminBalanceAvailable ($currency, $request_amount) {
+
+    // will return true if admin balance is available for a RELOAD request
+
+    $adminBalance = UserCurrency::where('id', 1)->first();
+
+    $difference = doubleval($adminBalance->$currency) - doubleval($request_amount);
+    return $difference >= 0 ? true : false;
+  }
+
+  function ifAllowWithdraw ($amount, $balance, $currency, $id_user, $isCreate) {
 
     // will return true if pending trade amount is not greater than request amount for withdraw
 
