@@ -30,17 +30,17 @@ class URequestController extends Controller
       }
       else {
 
-        if($this->ifBalanceAvailable($minuend, $currency, $amount)) {
+        if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $user->id, true)) {
 
-          if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $user->id, true)) {
+          if($this->ifBalanceAvailable($minuend, $currency, $amount)) {
 
             $request = Request::all();
             $data = UserRequest::create($request);
             return response()->json(compact('data'));
           }
-          else return response()->json(['message' => 'Trades Pending']);
+          return response()->json(['message' => 'Insufficient user balance']);
         }
-        return response()->json(['message' => 'Insufficient user balance']);
+        return response()->json(['message' => 'Trades Pending']);
       }
     }
     else return response()->json(['message' => 'Incorrect Transaction Pin!']);
@@ -86,9 +86,9 @@ class URequestController extends Controller
       }
       else {
 
-        if($this->ifBalanceAvailable($userCurrency, $currency, $amount)) {
+        if($this->ifAllowWithdraw($amount, $userCurrency->$currency, $currency, $id_user, false)) {
 
-          if($this->ifAllowWithdraw($amount, $userCurrency->$currency, $currency, $id_user, false)) {
+          if($this->ifBalanceAvailable($userCurrency, $currency, $amount)) {
 
             $userCurrency->decrement($currency, $amount);
             UserRequest::where('id', '=', $id_request)->delete();
@@ -96,9 +96,9 @@ class URequestController extends Controller
             $this->addToHistory($id_user, $amount, $type, $currency); // adds to transaction to history
             return response()->json(['message' => 'withdraw success']);
           }
-          else return response()->json(['message' => 'Trades Pending']);
+          return response()->json(['message' => 'Insufficient user balance']);
         }
-        return response()->json(['message' => 'Insufficient user balance']);
+        return response()->json(['message' => 'Trades Pending']);
       }
     }
     else return response()->json(['message' => 'Incorrect Transaction Pin!']);
@@ -134,7 +134,7 @@ class URequestController extends Controller
 
     // will return true if requested amount for withdraw is not greater than wallet balance
 
-    $difference = floatval($minuend->$currency) - floatval($subtrahend);
+    $difference = doubleval($minuend->$currency) - doubleval($subtrahend);
     return $difference >= 0 ? true : false;
   }
 
