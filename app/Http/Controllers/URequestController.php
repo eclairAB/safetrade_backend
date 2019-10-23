@@ -72,35 +72,28 @@ class URequestController extends Controller
     $currency = strtolower(Request::get('currency'));
     $amount = Request::get('amount');
     $type = Request::get('type');
-    $minuend = UserCurrency::where('id', $id_user)->first();
+    $userCurrency = UserCurrency::where('id', $id_user)->first();
 
     if(Request::get('transaction_pin') == $user->transaction_pin) {
 
       if($type == 'Reload'){
 
-        $addend = UserCurrency::where('id', $id_user)->first();
-        $sum = number_format($addend->$currency,10) + number_format($amount,10);
-
-        DB::table('user_currencies')->where('id', $id_user)->update([$currency => $sum]);
+        $userCurrency->increment($currency, $amount);
         UserRequest::where('id', '=', $id_request)->delete();
 
         $this->addToHistory($id_user, $amount, $type, $currency); // adds to transaction to history
-
         return response()->json(['message' => 'reload success']);
       }
       else {
 
-        if($this->ifBalanceAvailable($minuend, $currency, $amount)) {
+        if($this->ifBalanceAvailable($userCurrency, $currency, $amount)) {
 
-          if($this->ifAllowWithdraw($amount, $minuend->$currency, $currency, $id_user, false)) {
+          if($this->ifAllowWithdraw($amount, $userCurrency->$currency, $currency, $id_user, false)) {
 
-            $difference = number_format($minuend->$currency,10) - number_format($amount,10);
-
-            DB::table('user_currencies')->where('id', $id_user)->update([$currency => $difference]);
+            $userCurrency->decrement($currency, $amount);
             UserRequest::where('id', '=', $id_request)->delete();
 
             $this->addToHistory($id_user, $amount, $type, $currency); // adds to transaction to history
-
             return response()->json(['message' => 'withdraw success']);
           }
           else return response()->json(['message' => 'Trades Pending']);
@@ -141,7 +134,7 @@ class URequestController extends Controller
 
     // will return true if requested amount for withdraw is not greater than wallet balance
 
-    $difference = number_format($minuend->$currency,10) - number_format($subtrahend,10);
+    $difference = floatval($minuend->$currency) - floatval($subtrahend);
     return $difference >= 0 ? true : false;
   }
 

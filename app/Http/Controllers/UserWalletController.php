@@ -6,6 +6,7 @@ use Request;
 use App\User;
 use App\UserTrades;
 use App\UserTranfer;
+use App\UserRequest;
 use App\UserHistory;
 use App\UserCurrency;
 use App\Events\TradePosted;
@@ -21,7 +22,6 @@ class UserWalletController extends Controller
     	$user_currency = UserCurrency::with('user')->where('user_id',$sender->id)->first();
 
         $array = [
-            'cash_bal' => number_format($user_currency->cash_bal, 10),
             'btc' => number_format($user_currency->btc, 10),
             'eth' => number_format($user_currency->eth, 10),
             'xrp' => number_format($user_currency->xrp, 10),
@@ -166,6 +166,10 @@ class UserWalletController extends Controller
        }else{
            return $this->monitorUserTransaction();
        }
+       /*if($this->ifAllowTransaction($amount, $minuend->$currency, $currency, $id_user)) {
+
+       }*/
+       return response()->json(['message' => 'Trades Pending']);
     }
 
     public function getUserTrade($id, $trader_id)
@@ -230,7 +234,7 @@ class UserWalletController extends Controller
         //checker kung unsa ang gusto sa wallet sa creator ug trade.
         $trader_wallet_currency = $selected_trade->trade_currency;
 
-        if($selected_trade->user_id == 3 OR $selected_trade->user_id == 4 OR $selected_trade->user_id == 5 OR $selected_trade->user_id == 6 OR $selected_trade->user_id == 7){
+        if($selected_trade->user_id > 2 && $selected_trade->user_id < 8){
             return response()->json(['message' => 'This trade is already acquired by other user.']);
         }else{
             //1st for security purpose mag input ug transaction pin para maka trade kung mali Incorrect Transaction Pin!.
@@ -322,5 +326,23 @@ class UserWalletController extends Controller
         else {
             return response()->json(['message' => 'Incorrect Transaction Pin!']);
         }
+    }
+
+    function ifAllowTransaction ($amount, $balance, $currency, $id_user) {
+
+      // will return true if pending trade amount is not greater than request amount
+  
+      $userTrade = UserTrades::where('user_id', $id_user)->where('trade_currency', $currency)->get();
+      $userRequest = UserRequest::where('user_id', $id_user)->where('currency', $currency)->get();
+      $arr = [];
+      
+      foreach ($userTrade as $item) {
+        array_push($arr, $item->trade_amount);
+      }
+      foreach ($userRequest as $item) {
+        array_push($arr, $item->amount);
+      }
+      $pendingTotal = $balance - array_sum($arr);
+      return $pendingTotal >= $amount ? true : false;
     }
 }
