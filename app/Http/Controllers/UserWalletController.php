@@ -300,7 +300,7 @@ class UserWalletController extends Controller
 
                     $trade->save();
 
-                    event(new TradePosted($trade));
+                    broadcast(new TradePosted($trade));
                     return response()->json(compact('trade'));
                 }
             }else{

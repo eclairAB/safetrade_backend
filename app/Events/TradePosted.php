@@ -14,7 +14,7 @@ class TradePosted implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $usertrades = [];
+    public $data;
     
     /**
      * Create a new event instance.
@@ -23,7 +23,8 @@ class TradePosted implements ShouldBroadcast
      */
     public function __construct($data)
     {
-        $this->usertrades['data'] = $data;
+        $this->data = $data;
+        $this->dontBroadcastToCurrentUser();
     }
 
     /**
@@ -33,7 +34,7 @@ class TradePosted implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('trade-market');
+        return new Channel('channelmarket');
     }
 
     public function broadcastAs()
