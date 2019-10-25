@@ -20,6 +20,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         'App\Events\TradePosted' => [
             'App\Listeners\TradePostedListener'
+        ],
+        'App\Events\TradeRemoved' => [
+            'App\Listeners\TradeRemovedListener'
         ]
     ];
 

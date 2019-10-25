@@ -10,12 +10,12 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class TradePosted implements ShouldBroadcast
+class TradeRemoved implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $data;
-    
+
     /**
      * Create a new event instance.
      *
@@ -34,11 +34,11 @@ class TradePosted implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('channelmarket');
+        return new Channel('channeltraderemove');
     }
 
     public function broadcastAs()
     {
-        return 'trademarket';
+        return 'traderemove';
     }
 }
