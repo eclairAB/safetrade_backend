@@ -10,6 +10,7 @@ use App\UserRequest;
 use App\UserHistory;
 use App\UserCurrency;
 use App\Events\TradePosted;
+use App\Events\TradeRemoved;
 use Auth;
 use DB;
 
@@ -209,12 +210,12 @@ class UserWalletController extends Controller
         }elseif($trader_debit > $receiver_credit){
             return response()->json(['message' => 'You dont have enough balance to proceed this transaction.']);
         }else{
-            return $this->checkTheTraderBalance($id, $trader_id);
+            return $this->checkTheTraderBalance($id, $trader_id, $id);
         }
     }
 
 
-    public function checkTheTraderBalance($id, $trader_id)
+    public function checkTheTraderBalance($id, $trader_id, $post_id)
     {
         //i check kung kinsa ang authenticated na user.
         //sa diri na part kung ikaw ang authenticated usually ikaw ang maka maka dawat sa trade.
@@ -271,6 +272,8 @@ class UserWalletController extends Controller
                     if($transfer->save()){
                         $selected_trade->status = 0;
                         $selected_trade->save();
+
+                        broadcast(new TradeRemoved($post_id));
                         return response()->json(compact('transfer'));
                     }
                 }
@@ -316,11 +319,12 @@ class UserWalletController extends Controller
         $user = Auth::user();
 
         if(Request::get('transaction_pin') == $user->transaction_pin) {
-            
+
             $usertrade = UserTrades::where('user_id',$user->id)->find($id);
 
+            broadcast(new TradeRemoved($usertrade));
             $delete = $usertrade->delete();
-
+            
             return response()->json(['message' => 'You successfully deleted your trade post.']);
         }
         else {

@@ -13,7 +13,7 @@ class ViewController extends Controller
 
 	public function tradeList()
 	{
-		$trades = UserTrades::with('trader_info')->where('status', 1)->get();
+		$trades = UserTrades::with('trader_info')->where('status', 1)->orderBy('created_at', 'DESC')->get();
 
 		return response()->json($trades);
 	}
