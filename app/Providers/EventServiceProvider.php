@@ -23,6 +23,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         'App\Events\TradeRemoved' => [
             'App\Listeners\TradeRemovedListener'
+        ],
+        'App\Events\WalletUpdated' => [
+            'App\Listeners\WalletUpdatedListener'
         ]
     ];
 

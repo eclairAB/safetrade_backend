@@ -11,6 +11,7 @@ use App\UserHistory;
 use App\UserCurrency;
 use App\Events\TradePosted;
 use App\Events\TradeRemoved;
+use App\Events\WalletUpdated;
 use Auth;
 use DB;
 
@@ -96,6 +97,8 @@ class UserWalletController extends Controller
                         $receiver_balance->increment(Request::get('currency_trade'), Request::get('amount'));
                         
                         $transfer->save();
+
+                        broadcast(new WalletUpdated($transfer));
                         return response()->json(compact('transfer'));
                     }
                 }else{
@@ -274,6 +277,7 @@ class UserWalletController extends Controller
                         $selected_trade->save();
 
                         broadcast(new TradeRemoved($post_id));
+                        broadcast(new WalletUpdated($transfer));
                         return response()->json(compact('transfer'));
                     }
                 }
