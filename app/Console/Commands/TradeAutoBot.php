@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Events\TradePosted;
 use App\UserCurrency;
 use App\UserTrades;
 use App\User;
@@ -64,6 +65,7 @@ class TradeAutoBot extends Command
 
                     $trades->save();
 
+                    broadcast(new TradePosted($trades));
                     $this->line("done");
                 }
             }
@@ -113,6 +115,7 @@ class TradeAutoBot extends Command
 
                         $trades->save();
 
+                        broadcast(new TradePosted($trades));
                         $this->line("done");
                     }
                 }

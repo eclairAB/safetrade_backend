@@ -6,6 +6,7 @@ use App\UserCurrency;
 use App\UserHistory;
 use App\UserRequest;
 use App\UserTrades;
+use App\Events\WalletUpdated;
 use Auth;
 use DB;
 use Input;
@@ -83,6 +84,7 @@ class URequestController extends Controller
           $userCurrency->increment($currency, $amount);
           UserRequest::where('id', '=', $id_request)->delete();
 
+          broadcast(new WalletUpdated());
           $this->addToHistory($id_user, $amount, $type, $currency); // adds to transaction to history
           return response()->json(['message' => 'reload success']);
         }
@@ -97,6 +99,7 @@ class URequestController extends Controller
             $userCurrency->decrement($currency, $amount);
             UserRequest::where('id', '=', $id_request)->delete();
 
+            broadcast(new WalletUpdated());
             $this->addToHistory($id_user, $amount, $type, $currency); // adds to transaction to history
             return response()->json(['message' => 'withdraw success']);
           }

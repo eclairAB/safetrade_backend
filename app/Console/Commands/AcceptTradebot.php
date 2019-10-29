@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Events\TradeRemoved;
 use App\UserCurrency;
 use App\UserHistory;
 use App\UserTrades;
@@ -78,6 +79,7 @@ class AcceptTradebot extends Command
                         $list_trade_bot->status = 0;
                         $list_trade_bot->save();
                         $this->line('Sucess! bot3');
+                        broadcast(new TradeRemoved($list_trade_bot->id));
                     }
                 }else{
                     $this->line('bot3 is out of balance!');
@@ -120,6 +122,7 @@ class AcceptTradebot extends Command
                         $list_trade_bot->status = 0;
                         $list_trade_bot->save();
                         $this->line('Sucess! bot4');
+                        broadcast(new TradeRemoved($list_trade_bot->id));
                     }
                 }else{
                     $this->line('bot4 is out of balance!');
@@ -162,6 +165,7 @@ class AcceptTradebot extends Command
                         $list_trade_bot->status = 0;
                         $list_trade_bot->save();
                         $this->line('Sucess! bot5');
+                        broadcast(new TradeRemoved($list_trade_bot->id));
                     }
                 }else{
                     $this->line('bot5 is out of balance!');
@@ -205,6 +209,7 @@ class AcceptTradebot extends Command
                         $list_trade_bot->status = 0;
                         $list_trade_bot->save();
                         $this->line('Sucess! bot6');
+                        broadcast(new TradeRemoved($list_trade_bot->id));
                     }
                 }else{
                     $this->line('bot6 is out of balance!');
@@ -248,6 +253,7 @@ class AcceptTradebot extends Command
                         $list_trade_bot->status = 0;
                         $list_trade_bot->save();
                         $this->line('Sucess! bot7');
+                        broadcast(new TradeRemoved($list_trade_bot->id));
                     }
                 }else{
                     $this->line('bot7 is out of balance!');
