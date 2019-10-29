@@ -92,7 +92,6 @@ class UserController extends Controller {
 
     $wallet = new UserCurrency;
     $wallet->user_id = $user->id;
-    $wallet->cash_bal = '0.0000000000';
     $wallet->btc = '0.0000000000';
     $wallet->eth = '0.0000000000';
     $wallet->xrp = '0.0000000000';

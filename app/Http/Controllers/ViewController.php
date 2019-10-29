@@ -33,12 +33,13 @@ class ViewController extends Controller
 
     	$currencyFilter = Request::get('currencyFilter');
 
-    	/*if(empty($currencyFilter)){
-    		$default = UserHistory::with('user_sender','user_receiver')->where('currency_trade','btc')->orWhere('currency_request','btc')->orderBy('created_at', 'DESC')->get();
+        if ($currencyFilter == 'all') {
 
-            return response()->json(['results' => $default]);
-    	}*/
-    	$results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->orWhere('currency_request',$currencyFilter)->get();
+            $results = UserHistory::with('user_sender','user_receiver')->get();
+        }
+        else {
+            $results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->orWhere('currency_request',$currencyFilter)->get();
+        }
 
         foreach ($results as $result) {
             if($user->id == $result->sender_id OR $user->id == $result->receiver_id){
@@ -50,6 +51,7 @@ class ViewController extends Controller
                     'transaction_option' => $result->transaction_option,
                     'currency_trade' => $result->currency_trade,
                     'amount' => $result->amount,
+                    'amount_two' => $result->amount_two,
                     'created_at' => $result->created_at,
                     'currency_request' => $result->currency_request,
                     'currency_trade' => $result->currency_trade
