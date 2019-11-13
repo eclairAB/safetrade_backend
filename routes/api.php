@@ -17,10 +17,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', 'Auth\UserController@login');
-Route::get('getProfile/{uid}', 'Auth\UserController@getProfile');
+Route::group(['middleware' => 'cors'], function(){
+	Route::post('login', 'Auth\UserController@login');
+	Route::get('getProfile/{uid}', 'Auth\UserController@getProfile');
+	Route::post('register', 'Auth\UserController@register');
+});
 
-Route::post('register', 'Auth\UserController@register');
 Route::group(['middleware' => 'auth:api', 'cors'], function(){
 	Route::post('details', 'Auth\UserController@details');
 	Route::post('update/user', 'Auth\UserController@updateProfile');
