@@ -54,7 +54,9 @@ class UserWalletController extends Controller
         $user = Auth::user();
     	$keyword = Request::get('keyword');
 
-        $search_users = User::where('username','LIKE', '%' .$keyword. '%')->orWhere('name_first','LIKE', '%' .$keyword. '%')->orWhere('name_last','LIKE', '%' .$keyword. '%')->get();
+        /*$search_users = User::where('username','LIKE', '%' .$keyword. '%')->orWhere('name_first','LIKE', '%' .$keyword. '%')->orWhere('name_last','LIKE', '%' .$keyword. '%')->get();*/
+
+        $search_users = User::where('username','LIKE', '%' .$keyword. '%')->get();        
 
         foreach ($search_users as $search_user) {
             if($search_user->id != $user->id){
