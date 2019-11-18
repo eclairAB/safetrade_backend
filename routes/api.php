@@ -72,6 +72,12 @@ Route::group(['middleware' => 'auth:api', 'cors'], function () {
     Route::post('wallet/list', 'URequestController@getRequests');
     Route::post('wallet/approve', 'URequestController@approveRequest');
     Route::post('wallet/delete', 'URequestController@deleteRequest');
+
+    Route::resource('assets', 'AssetController')->except(['create', 'edit']);
+    Route::resource(
+        'assets.price-history',
+        'AssetPriceHistoryController'
+    )->only(['index']);
 });
 
 Route::group(
