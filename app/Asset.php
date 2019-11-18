@@ -14,4 +14,9 @@ class Asset extends Model
     public function prices() {
         return $this->hasMany('App\AssetPriceHistory');
     }
+
+    public function bets()
+    {
+        return $this->hasMany('App\UserBet');
+    }
 }
