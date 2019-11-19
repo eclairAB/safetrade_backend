@@ -40,6 +40,8 @@ class CreateUserBetsTable extends Migration
                 ->references('id')
                 ->on('assets')
                 ->onDelete('cascade');
+
+            Schema::enableForeignKeyConstraints();
         });
     }
 

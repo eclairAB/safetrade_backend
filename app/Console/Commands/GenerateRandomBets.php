@@ -44,33 +44,35 @@ class GenerateRandomBets extends Command
     public function handle()
     {
         // Update to support multiple bots
-        $user = User::where('username', 'safetrade_bot')->first();
+        $bots = User::where('username', 'LIKE', 'safetrade_bot%')->get();
         $asset = Asset::get()
             ->where('name', $this->argument('asset_name'))
             ->first();
 
-        if ($asset && $user) {
-            $now = Carbon::now();
-            $max = CarbonImmutable::now()->add(60, 'second');
-            $lastBet = UserBet::where([
-                ['user_id', $user->id],
-                ['asset_id', $asset->id]
-            ])
-                ->orderBy('timestamp', 'desc')
-                ->get()
-                ->first();
+        if ($asset) {
+            foreach ($bots as $bot) {
+                $now = Carbon::now();
+                $max = CarbonImmutable::now()->add(60, 'second');
+                $lastBet = UserBet::where([
+                    ['user_id', $bot->id],
+                    ['asset_id', $asset->id]
+                ])
+                    ->orderBy('timestamp', 'desc')
+                    ->get()
+                    ->first();
 
-            $lastTimestamp = $lastBet ? $lastBet->timestamp : $now;
-            $choices = [true, false];
-            while ($lastTimestamp <= $max) {
-                UserBet::create([
-                    'user_id' => $user->id,
-                    'asset_id' => $asset->id,
-                    'timestamp' => $lastTimestamp,
-                    'amount' => 5,
-                    'will_go_up' => $choices[array_rand($choices)]
-                ]);
-                $lastTimestamp->add(1, 'second');
+                $lastTimestamp = $lastBet ? Carbon::parse($lastBet->timestamp) : $now;
+                $choices = [true, false];
+                while ($lastTimestamp <= $max) {
+                    UserBet::create([
+                        'user_id' => $bot->id,
+                        'asset_id' => $asset->id,
+                        'timestamp' => $lastTimestamp,
+                        'amount' => 5,
+                        'will_go_up' => $choices[array_rand($choices)]
+                    ]);
+                    $lastTimestamp->add(1, 'second');
+                }
             }
         }
     }

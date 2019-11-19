@@ -39,12 +39,15 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     public function bets()
     {
         return $this->hasMany('App\UserBet');
+    }
+
+    public function betAmount()
+    {
+        return $this->hasOne('App\BetAmount');
     }
 }
