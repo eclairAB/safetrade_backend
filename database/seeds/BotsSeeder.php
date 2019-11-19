@@ -35,38 +35,27 @@ class BotsSeeder extends Seeder
         $max = 500.0;
         foreach (range(1, 5) as $i) {
             $username = "safetrade_bot{$i}";
-            $attrs = [
-                "username" => $username,
-                "name_first" => "Safetrade{$i}",
-                "password" => bcrypt("bot_password"),
-                "user_level" => "user"
-            ];
-            $user = User::where([
-                "email" => "{$username}@gmail.com"
-            ])->first();
+            $user = User::updateOrCreate(
+                [
+                    "email" => "{$username}@gmail.com"
+                ],
+                [
+                    "username" => $username,
+                    "name_first" => "Safetrade{$i}",
+                    "password" => bcrypt("bot_password"),
+                    "user_level" => "user"
+                ]
+            );
 
-            if ($user) {
-                $user->fill($attrs);
-                $user->save();
-            } else {
-                $attrs["email"] = "{$username}@gmail.com";
-                $user = User::create($attrs);
-            }
-
-            $attrs = [
-                "min" => $min,
-                "max" => $max
-            ];
-            $betAmount = BetAmount::where([
-                "user_id" => $user->id
-            ])->first();
-            if ($betAmount) {
-                $betAmount->fill($attrs);
-                $betAmount->save();
-            } else {
-                $attrs["user_id"] = $user->id;
-                BetAmount::create($attrs);
-            }
+            BetAmount::updateOrCreate(
+                [
+                    "user_id" => $user->id
+                ],
+                [
+                    "min" => $min,
+                    "max" => $max
+                ]
+            );
             $min += 200.0;
             $max += 200.0;
         }

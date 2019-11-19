@@ -13,7 +13,7 @@ use App\Asset;
 use App\User;
 use App\UserBet;
 
-class GenerateRandomBets implements ShouldQueue
+class GenerateRandomBetsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

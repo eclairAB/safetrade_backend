@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 
-use App\Jobs\GenerateRandomBets as GenerateRandomBetsJob;
+use App\Jobs\GenerateRandomBetsJob;
 use App\Asset;
 use App\User;
 

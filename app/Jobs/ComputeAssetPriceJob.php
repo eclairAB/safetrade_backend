@@ -12,7 +12,7 @@ use App\Asset;
 use App\AssetPriceHistory;
 use App\UserBet;
 
-class ComputeAssetPrice implements ShouldQueue
+class ComputeAssetPriceJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -51,11 +51,15 @@ class ComputeAssetPrice implements ShouldQueue
     private function setPrice($lastPrice, $toTimestamp, $upTotal, $downTotal)
     {
         $diff = $upTotal - $downTotal;
-        return AssetPriceHistory::create([
-            'asset_id' => $this->assetId,
-            'timestamp' => $toTimestamp,
-            'price' => $lastPrice->price - $diff
-        ]);
+        return AssetPriceHistory::updateOrCreate(
+            [
+                'asset_id' => $this->assetId,
+                'timestamp' => $toTimestamp
+            ],
+            [
+                'price' => $lastPrice->price - $diff
+            ]
+        );
     }
 
     /**

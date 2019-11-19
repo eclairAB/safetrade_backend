@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 
-use App\Jobs\ComputeAssetPrice as ComputeAssetPriceJob;
+use App\Jobs\ComputeAssetPriceJob;
 use App\Asset;
 
 class ComputeAssetPrice extends Command
