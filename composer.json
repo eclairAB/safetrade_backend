@@ -11,6 +11,7 @@
         "fideloper/proxy": "^4.0",
         "intervention/image": "^2.5",
         "laravel/framework": "5.8.*",
+        "laravel/horizon": "^3.4",
         "laravel/passport": "^7.4",
         "laravel/tinker": "^1.0",
         "nesbot/carbon": "^2.24",

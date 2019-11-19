@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\UserBet;
 use App\Asset;
-use App\AssetPriceHistory;
 
-class AssetPriceHistoryController extends Controller
+class AssetBetController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,7 @@ class AssetPriceHistoryController extends Controller
     public function index($assetId)
     {
         $asset = Asset::findOrFail($assetId);
-        return AssetPriceHistory::where('asset_id', $asset->id)
+        return UserBet::where('asset_id', $asset->id)
             ->orderBy('timestamp', 'desc')
             ->paginate(10);
     }

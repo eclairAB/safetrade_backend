@@ -78,6 +78,7 @@ Route::group(['middleware' => 'auth:api', 'cors'], function () {
         'assets.price-history',
         'AssetPriceHistoryController'
     )->only(['index']);
+    Route::resource('assets.bets', 'AssetBetController')->only(['index']);
 });
 
 Route::group(

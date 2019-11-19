@@ -2,13 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Illuminate\Console\Command;
 
+use App\Jobs\GenerateRandomBets as GenerateRandomBetsJob;
 use App\Asset;
 use App\User;
-use App\UserBet;
 
 class GenerateRandomBets extends Command
 {
@@ -43,37 +42,26 @@ class GenerateRandomBets extends Command
      */
     public function handle()
     {
+        $timestamp = CarbonImmutable::now();
         // Update to support multiple bots
-        $bots = User::where('username', 'LIKE', 'safetrade_bot%')->get();
+        $botUsers = User::where('username', 'LIKE', 'safetrade_bot%')->get();
         $asset = Asset::get()
             ->where('name', $this->argument('asset_name'))
             ->first();
-
-        if ($asset) {
-            foreach ($bots as $bot) {
-                $now = Carbon::now();
-                $max = CarbonImmutable::now()->add(60, 'second');
-                $lastBet = UserBet::where([
-                    ['user_id', $bot->id],
-                    ['asset_id', $asset->id]
-                ])
-                    ->orderBy('timestamp', 'desc')
-                    ->get()
-                    ->first();
-
-                $lastTimestamp = $lastBet ? Carbon::parse($lastBet->timestamp) : $now;
-                $choices = [true, false];
-                while ($lastTimestamp <= $max) {
-                    UserBet::create([
-                        'user_id' => $bot->id,
-                        'asset_id' => $asset->id,
-                        'timestamp' => $lastTimestamp,
-                        'amount' => 5,
-                        'will_go_up' => $choices[array_rand($choices)]
-                    ]);
-                    $lastTimestamp->add(1, 'second');
-                }
-            }
+        if (!$asset) {
+            $this->info('No asset found: ' . $asset->name);
+            return;
         }
+
+        $count = 1;
+        while ($count <= 60) {
+            foreach ($botUsers as $user) {
+                GenerateRandomBetsJob::dispatch($asset, $user, $timestamp);
+            }
+            $timestamp = $timestamp->addSecond();
+            $count++;
+            sleep(1);
+        }
+        $this->info('End: GenerateRandomBets');
     }
 }
