@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -27,8 +26,11 @@ class GenerateRandomBets implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Asset $asset, User $user, $timestamp)
-    {
+    public function __construct(
+        Asset $asset,
+        User $user,
+        CarbonImmutable $timestamp
+    ) {
         //
         $this->asset = $asset;
         $this->user = $user;
@@ -47,13 +49,18 @@ class GenerateRandomBets implements ShouldQueue
         if (!$betAmount) {
             return;
         }
-        $amount = mt_rand($betAmount->min, $betAmount->max);
-        UserBet::create([
-            'user_id' => $this->user->id,
-            'asset_id' => $this->asset->id,
-            'timestamp' => $this->timestamp,
-            'amount' => $amount,
-            'will_go_up' => $choices[array_rand($choices)]
-        ]);
+        $count = 1;
+        while ($count <= 60) {
+            $amount = mt_rand($betAmount->min, $betAmount->max);
+            $userBet = UserBet::create([
+                'user_id' => $this->user->id,
+                'asset_id' => $this->asset->id,
+                'timestamp' => $this->timestamp,
+                'amount' => $amount,
+                'will_go_up' => $choices[array_rand($choices)]
+            ]);
+            $this->timestamp = $this->timestamp->addSecond();
+            $count++;
+        }
     }
 }

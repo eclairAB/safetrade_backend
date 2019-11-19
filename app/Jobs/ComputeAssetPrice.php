@@ -71,9 +71,6 @@ class ComputeAssetPrice implements ShouldQueue
             ->get()
             ->first();
 
-        // $toTimestamp = $lastPrice
-        //     ? CarbonImmutable::parse($lastPrice->timestamp)->addSecond()
-        //     : $now;
         $toTimestamp = $this->timestamp;
         $fromTimestamp = $toTimestamp->subSeconds(8);
         $upBets = $this->getUpBets($fromTimestamp, $toTimestamp);

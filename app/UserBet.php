@@ -8,7 +8,7 @@ class UserBet extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['user_id', 'asset_id', 'amount', 'will_go_up'];
+    protected $fillable = ['user_id', 'asset_id', 'amount', 'will_go_up', 'timestamp'];
 
     public function asset()
     {

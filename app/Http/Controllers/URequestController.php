@@ -8,8 +8,6 @@ use App\UserRequest;
 use App\UserTrades;
 use App\Events\WalletUpdated;
 use Auth;
-use DB;
-use Input;
 use Request;
 
 class URequestController extends Controller

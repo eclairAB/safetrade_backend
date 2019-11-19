@@ -1,9 +1,12 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 use App\User;
 use App\BetAmount;
+use App\Asset;
+use App\AssetPriceHistory;
 
 class BotsSeeder extends Seeder
 {
@@ -14,6 +17,20 @@ class BotsSeeder extends Seeder
      */
     public function run()
     {
+        $asset = Asset::firstOrCreate([
+            'name' => 'cash'
+        ]);
+        $price = AssetPriceHistory::where([
+            'asset_id' => $asset->id
+        ])->first();
+
+        if (!$price) {
+            AssetPriceHistory::create([
+                'asset_id' => $asset->id,
+                'price' => 50000000.0,
+                'timestamp' => Carbon::now()
+            ])->first();
+        }
         $min = 100.0;
         $max = 500.0;
         foreach (range(1, 5) as $i) {

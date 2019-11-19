@@ -41,7 +41,7 @@ class ComputeAssetPrice extends Command
      */
     public function handle()
     {
-        $timestamp = CarbonImmutable::now();
+        $timestamp = CarbonImmutable::now()->startOfSecond();
         $asset = Asset::get()
             ->where('name', $this->argument('asset_name'))
             ->first();

@@ -42,7 +42,8 @@ class GenerateRandomBets extends Command
      */
     public function handle()
     {
-        $timestamp = CarbonImmutable::now();
+        $this->info('Start: GenerateRandomBets');
+        $timestamp = CarbonImmutable::now()->startOfSecond();
         // Update to support multiple bots
         $botUsers = User::where('username', 'LIKE', 'safetrade_bot%')->get();
         $asset = Asset::get()
@@ -53,14 +54,9 @@ class GenerateRandomBets extends Command
             return;
         }
 
-        $count = 1;
-        while ($count <= 60) {
-            foreach ($botUsers as $user) {
-                GenerateRandomBetsJob::dispatch($asset, $user, $timestamp);
-            }
-            $timestamp = $timestamp->addSecond();
-            $count++;
-            sleep(1);
+        foreach ($botUsers as $user) {
+            GenerateRandomBetsJob::dispatch($asset, $user, $timestamp);
+            $this->info('Generating bet for user: ' . $user->username);
         }
         $this->info('End: GenerateRandomBets');
     }

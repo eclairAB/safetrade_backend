@@ -16,7 +16,10 @@ class CreateAssetPriceHistoriesTable extends Migration
         Schema::create('asset_price_histories', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('asset_id');
-            $table->timestampTz('timestamp');
+            $table
+                ->timestampTz('timestamp')
+                ->nullable()
+                ->default(null);
             $table->decimal('price', 11, 3);
             $table
                 ->foreign('asset_id')

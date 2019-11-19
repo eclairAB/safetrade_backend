@@ -17,7 +17,10 @@ class CreateUserBetsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('asset_id');
-            $table->timestampTz('timestamp');
+            $table
+                ->timestampTz('timestamp')
+                ->nullable()
+                ->default(null);
             $table->decimal('amount', 11, 3);
 
             // The amount the user will gain/lose
