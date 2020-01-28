@@ -59,7 +59,7 @@ class UserWalletController extends Controller
         $search_users = User::where('username','LIKE', '%' .$keyword. '%')->get();        
 
         foreach ($search_users as $search_user) {
-            if($search_user->id != $user->id){
+            if(($search_user->id != $user->id) && !($search_user->id > 2 && $search_user->id < 8)){
                 $array = [
                     'id' => $search_user->id,
                     'username' => $search_user->username,

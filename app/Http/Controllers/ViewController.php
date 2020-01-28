@@ -14,6 +14,13 @@ class ViewController extends Controller
 	public function tradeList()
 	{
 		$trades = UserTrades::with('trader_info')->where('status', 1)->orderBy('created_at', 'DESC')->get();
+        $sample = [];
+        foreach ($trades as $item) {
+            $item->request_amount = number_format($item->request_amount, 10);
+            $item->trade_amount = number_format($item->trade_amount, 10);
+            array_push($sample, $item->request_amount);
+            array_push($sample, $item->trade_amount);
+        }
 
 		return response()->json($trades);
 	}

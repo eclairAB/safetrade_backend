@@ -51,7 +51,7 @@ Route::group(['middleware' => 'auth:api', 'cors'], function(){
 	Route::post('wallet/delete', 'URequestController@deleteRequest');
 });
 
-Route::group(['namespace' => 'Auth', 'middleware' => 'auth:api', 'prefix' => 'password'], function () {    
+Route::group(['namespace' => 'Auth', 'middleware' => 'auth:api', 'prefix' => 'password'], function () {
     Route::post('create', 'PasswordResetController@create');
     Route::get('find/{token}', 'PasswordResetController@find');
     Route::post('reset', 'PasswordResetController@reset');
