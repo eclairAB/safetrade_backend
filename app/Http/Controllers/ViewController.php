@@ -42,10 +42,10 @@ class ViewController extends Controller
 
         if ($currencyFilter == 'all') {
 
-            $results = UserHistory::with('user_sender','user_receiver')->get();
+            $results = UserHistory::with('user_sender','user_receiver')->orderBy('created_at', 'DESC')->get();
         }
         else {
-            $results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->orWhere('currency_request',$currencyFilter)->get();
+            $results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->orWhere('currency_request',$currencyFilter)->orderBy('created_at', 'DESC')->get();
         }
 
         foreach ($results as $result) {
