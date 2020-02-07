@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Events\TradePosted;
 use App\UserCurrency;
 use App\UserTrades;
 use App\BotTrade;
@@ -89,6 +90,7 @@ class TradingBot extends Command
             $trades->bot_image = $bot_info->bot_image;
 
             $trades->save();
+            broadcast(new TradePosted($trades));
             $this->line("Bot 1 Done");
         }
     }
@@ -137,6 +139,7 @@ class TradingBot extends Command
             $trades->bot_image = $bot_info->bot_image;
     
             $trades->save();
+            broadcast(new TradePosted($trades));
             $this->line("Bot 2 Done");
         }
     }
@@ -185,6 +188,7 @@ class TradingBot extends Command
             $trades->bot_image = $bot_info->bot_image;
     
             $trades->save();
+            broadcast(new TradePosted($trades));
             $this->line("Bot 3 Done");
         }
     }
@@ -192,7 +196,7 @@ class TradingBot extends Command
     public function bot_fourth()
     {
         // Get the bot wallets
-        $bot_wallets = UserCurrency::whereIn('user_id', [3,4,5,6,7])->get();
+        $bot_wallets = UserCurrency::where('user_id', 6)->first();
 
         $arr = [
             'btc,eth',
@@ -233,6 +237,7 @@ class TradingBot extends Command
             $trades->bot_image = $bot_info->bot_image;
     
             $trades->save();
+            broadcast(new TradePosted($trades));
             $this->line("Bot 4 Done");
         }
     }
@@ -240,7 +245,7 @@ class TradingBot extends Command
     public function bot_fifth()
     {
         // Get the bot wallets
-        $bot_wallets = UserCurrency::whereIn('user_id', [3,4,5,6,7])->get();
+        $bot_wallets = UserCurrency::where('user_id', 7)->first();
 
         $arr = [
             'btc,eth',
@@ -281,6 +286,7 @@ class TradingBot extends Command
             $trades->bot_image = $bot_info->bot_image;
     
             $trades->save();
+            broadcast(new TradePosted($trades));
             $this->line("Bot 5 Done");
         }
     }
