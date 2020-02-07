@@ -1,10 +1,10 @@
 {
-	"authHost": "http://199.68.188.230",
+	"authHost": "https://userfriendlyexchange.com:8000",
 	"authEndpoint": "/broadcasting/auth",
 	"clients": [
 		{
-			"appId": "c7a5711a7a70b4a6",
-			"key": "d871e26aba6392c46b9a61895f858080"
+			"appId": "46fe91b84dc4be9a",
+			"key": "a8b6b022958da4359942be0315cacb82"
 		}
 	],
 	"database": "redis",
@@ -16,13 +16,13 @@
 	},
 	"devMode": false,
 	"host": null,
-	"port": "6002",
-	"protocol": "http",
+	"port": "6001",
+	"protocol": "https",
 	"socketio": {},
 	"secureOptions": 67108864,
-	"sslCertPath": "",
-	"sslKeyPath": "",
-	"sslCertChainPath": "",
+	"sslCertPath": "/etc/apache2/ssl/cert/userfriendlyexchange.com.crt",
+	"sslKeyPath": "/etc/apache2/ssl/cert/userfriendlyexchange_com.pem",
+	"sslCertChainPath": "/etc/apache2/ssl/cert/userfriendlyexchange.com.ca-bundle",
 	"sslPassphrase": "",
 	"subscribers": {
 		"http": true,
@@ -30,7 +30,7 @@
 	},
 	"apiOriginAllow": {
 		"allowCors": true,
-		"allowOrigin": "http://199.68.188.230",
+		"allowOrigin": "https://userfriendlyexchange.com",
 		"allowMethods": "GET, POST",
 		"allowHeaders": "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id"
 	}

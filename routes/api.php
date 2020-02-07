@@ -16,10 +16,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', 'Auth\UserController@login');
-Route::get('getProfile/{uid}', 'Auth\UserController@getProfile');
+Route::group(['middleware' => 'cors'], function(){
+	Route::post('login', 'Auth\UserController@login');
+	Route::get('getProfile/{uid}', 'Auth\UserController@getProfile');
+	Route::post('register', 'Auth\UserController@register');
+});
 
-Route::post('register', 'Auth\UserController@register')->middleware('cors');
 Route::group(['middleware' => 'auth:api', 'cors'], function(){
 	Route::post('details', 'Auth\UserController@details');
 	Route::post('update/user', 'Auth\UserController@updateProfile');
@@ -48,7 +50,7 @@ Route::group(['middleware' => 'auth:api', 'cors'], function(){
 	Route::post('wallet/delete', 'URequestController@deleteRequest');
 });
 
-Route::group(['namespace' => 'Auth', 'middleware' => 'auth:api', 'prefix' => 'password'], function () {    
+Route::group(['namespace' => 'Auth', 'middleware' => 'auth:api', 'prefix' => 'password'], function () {
     Route::post('create', 'PasswordResetController@create');
     Route::get('find/{token}', 'PasswordResetController@find');
     Route::post('reset', 'PasswordResetController@reset');

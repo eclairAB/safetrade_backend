@@ -14,6 +14,13 @@ class ViewController extends Controller
 	public function tradeList()
 	{
 		$trades = UserTrades::with('trader_info')->where('status', 1)->orderBy('created_at', 'DESC')->get();
+        $sample = [];
+        foreach ($trades as $item) {
+            $item->request_amount = number_format($item->request_amount, 10);
+            $item->trade_amount = number_format($item->trade_amount, 10);
+            array_push($sample, $item->request_amount);
+            array_push($sample, $item->trade_amount);
+        }
 
 		return response()->json($trades);
 	}
@@ -35,10 +42,10 @@ class ViewController extends Controller
 
         if ($currencyFilter == 'all') {
 
-            $results = UserHistory::with('user_sender','user_receiver')->get();
+            $results = UserHistory::with('user_sender','user_receiver')->orderBy('created_at', 'DESC')->get();
         }
         else {
-            $results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->orWhere('currency_request',$currencyFilter)->get();
+            $results = UserHistory::with('user_sender','user_receiver')->where('currency_trade',$currencyFilter)->orWhere('currency_request',$currencyFilter)->orderBy('created_at', 'DESC')->get();
         }
 
         foreach ($results as $result) {

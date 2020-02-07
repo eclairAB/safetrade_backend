@@ -73,7 +73,7 @@ class URequestController extends Controller
     $currency = strtolower(Request::get('currency'));
     $amount = Request::get('amount');
     $type = Request::get('type');
-    $userCurrency = UserCurrency::where('id', $id_user)->first();
+    $userCurrency = UserCurrency::where('user_id', $id_user)->first();
 
     if(Request::get('transaction_pin') == $user->transaction_pin) {
 
