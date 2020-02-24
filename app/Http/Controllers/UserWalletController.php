@@ -56,7 +56,7 @@ class UserWalletController extends Controller
 
         /*$search_users = User::where('username','LIKE', '%' .$keyword. '%')->orWhere('name_first','LIKE', '%' .$keyword. '%')->orWhere('name_last','LIKE', '%' .$keyword. '%')->get();*/
 
-        $search_users = User::where('username','LIKE', '%' .$keyword. '%')->get();        
+        $search_users = User::where('username','LIKE', '%' .$keyword. '%')->get();
 
         foreach ($search_users as $search_user) {
             if(($search_user->id != $user->id) && !($search_user->id > 2 && $search_user->id < 8)){
@@ -71,7 +71,7 @@ class UserWalletController extends Controller
             }
         }
         return response()->json(compact('data'));
-        
+
     }
 
 
@@ -94,10 +94,10 @@ class UserWalletController extends Controller
                         $transfer->transaction_option = Request::get('transaction_option');
                         $transfer->currency_trade = Request::get('currency_trade');
                         $transfer->currency_request = Request::get('currency_request');
-                        
+
                         $sender_balance->decrement(Request::get('currency_trade'), Request::get('amount'));
                         $receiver_balance->increment(Request::get('currency_trade'), Request::get('amount'));
-                        
+
                         $transfer->save();
 
                         broadcast(new WalletUpdated());
@@ -122,7 +122,7 @@ class UserWalletController extends Controller
         if($trades->count() > 0){
 
             foreach ($trades as $trade) {
-                
+
                 $wallet = $trade->trade_currency;
                 $current_wallet = doubleval($get_balance->$wallet);
                 $amount[] = doubleval($trade->trade_amount);
@@ -149,7 +149,7 @@ class UserWalletController extends Controller
        $user = Auth::user();
        $trades = UserTrades::where('status',1)->where('user_id',$user->id)->get();
        $get_balance = UserCurrency::where('user_id',$user->id)->first();
-   
+
        if($trades->count() > 0){
 
            foreach ($trades as $trade) {
@@ -158,7 +158,7 @@ class UserWalletController extends Controller
                $current_wallet = doubleval($get_balance->$wallet);
                $amount[] = doubleval($trade->request_amount);
                $data = array_sum($amount);
-           }   
+           }
 
            $my_balance = doubleval($current_wallet);
            $my_current_trades = doubleval($data);
@@ -210,7 +210,8 @@ class UserWalletController extends Controller
         // dd($trader_wal2);
         //compare the value of the user's balance to the requested amount and trade value.
         //if request_amount > balance OR trade_amount > balance
-        if($trader_debit > $trader_wal1 || $trader_credit > $trader_wal2){
+
+        if($trader_credit > $trader_wal2){
             return response()->json(['message' => 'Currently, the trader has have not enough balance to proceed with this transaction.']);
         }elseif($trader_debit > $receiver_credit){
             return response()->json(['message' => 'You dont have enough balance to proceed this transaction.']);
@@ -238,15 +239,15 @@ class UserWalletController extends Controller
         $receiver_amount = doubleval($selected_trade->request_amount);
 
         //checker kung unsa ang gusto sa wallet sa creator ug trade.
-        $trader_wallet_currency = $selected_trade->trade_currency;
+        $trader_wallet_currency = $selected_trade->request_currency;
 
         if($selected_trade->user_id > 2 && $selected_trade->user_id < 8){
             return response()->json(['message' => 'This trade is already acquired by other user.']);
         }else{
             //1st for security purpose mag input ug transaction pin para maka trade kung mali Incorrect Transaction Pin!.
             if(Request::get('transaction_pin') == $receiver->transaction_pin){
-                
-                //2nd pag ang itrade sa sender na value kay greater than sa imong balance(receiver) Invalid Request Trade!
+
+                //2nd pag ang itrade sa sender na value kay greater than sa imong balance(receiver)
                 if(doubleval($selected_trade->trade_amount) > $your_balance[$trader_wallet_currency]){
                     return response()->json(['message' => 'Invalid Request Trade!']);
                 }else{
@@ -330,7 +331,7 @@ class UserWalletController extends Controller
 
             broadcast(new TradeRemoved($usertrade));
             $delete = $usertrade->delete();
-            
+
             return response()->json(['message' => 'You successfully deleted your trade post.']);
         }
         else {
@@ -341,11 +342,11 @@ class UserWalletController extends Controller
     function ifAllowTransaction ($amount, $balance, $currency, $id_user) {
 
       // will return true if pending trade amount is not greater than request amount
-  
+
       $userTrade = UserTrades::where('user_id', $id_user)->where('trade_currency', $currency)->get();
       $userRequest = UserRequest::where('user_id', $id_user)->where('currency', $currency)->get();
       $arr = [];
-      
+
       foreach ($userTrade as $item) {
         array_push($arr, $item->trade_amount);
       }
