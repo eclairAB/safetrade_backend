@@ -46,22 +46,24 @@ class TradingBot extends Command
 
     }
 
+    function getPairings()
+    {
+      $pairings = [];
+      $bot_trade = BotTrade::select(array('wallet_one', 'wallet_two'))->get();
+
+      foreach ($bot_trade as $item)
+      {
+        array_push($pairings, $item->wallet_one . "," . $item->wallet_two);
+      }
+      return $pairings;
+    }
+
     public function bot_first()
     {
         // Get the bot wallets
         $bot_wallets = UserCurrency::where('user_id', 3)->first();
-        
-        $arr = [
-            'btc,eth',
-            'btc,xrp',
 
-            'eth,btc',
-            'eth,xrp',
-
-            'xrp,btc',
-            'xrp,eth'
-        ];
-
+        $arr = $this->getPairings();
         $trade_index = array_rand($arr);
 
         $combinations = explode(",", $arr[$trade_index]);
@@ -100,17 +102,7 @@ class TradingBot extends Command
         // Get the bot wallets
         $bot_wallets = UserCurrency::where('user_id', 4)->first();
 
-        $arr = [
-            'btc,eth',
-            'btc,xrp',
-
-            'eth,btc',
-            'eth,xrp',
-
-            'xrp,btc',
-            'xrp,eth'
-        ];
-
+        $arr = $this->getPairings();
         $trade_index = array_rand($arr);
 
         $combinations = explode(",", $arr[$trade_index]);
@@ -137,7 +129,7 @@ class TradingBot extends Command
             $trades->trade_currency = $second;
             $trades->bot_name = $bot_info->bot_name;
             $trades->bot_image = $bot_info->bot_image;
-    
+
             $trades->save();
             broadcast(new TradePosted($trades));
             $this->line("Bot 2 Done");
@@ -149,17 +141,7 @@ class TradingBot extends Command
         // Get the bot wallets
         $bot_wallets = UserCurrency::where('user_id', 5)->first();
 
-        $arr = [
-            'btc,eth',
-            'btc,xrp',
-
-            'eth,btc',
-            'eth,xrp',
-
-            'xrp,btc',
-            'xrp,eth'
-        ];
-
+        $arr = $this->getPairings();
         $trade_index = array_rand($arr);
 
         $combinations = explode(",", $arr[$trade_index]);
@@ -186,7 +168,7 @@ class TradingBot extends Command
             $trades->trade_currency = $second;
             $trades->bot_name = $bot_info->bot_name;
             $trades->bot_image = $bot_info->bot_image;
-    
+
             $trades->save();
             broadcast(new TradePosted($trades));
             $this->line("Bot 3 Done");
@@ -198,17 +180,7 @@ class TradingBot extends Command
         // Get the bot wallets
         $bot_wallets = UserCurrency::where('user_id', 6)->first();
 
-        $arr = [
-            'btc,eth',
-            'btc,xrp',
-
-            'eth,btc',
-            'eth,xrp',
-
-            'xrp,btc',
-            'xrp,eth'
-        ];
-
+        $arr = $this->getPairings();
         $trade_index = array_rand($arr);
 
         $combinations = explode(",", $arr[$trade_index]);
@@ -235,7 +207,7 @@ class TradingBot extends Command
             $trades->trade_currency = $second;
             $trades->bot_name = $bot_info->bot_name;
             $trades->bot_image = $bot_info->bot_image;
-    
+
             $trades->save();
             broadcast(new TradePosted($trades));
             $this->line("Bot 4 Done");
@@ -247,17 +219,7 @@ class TradingBot extends Command
         // Get the bot wallets
         $bot_wallets = UserCurrency::where('user_id', 7)->first();
 
-        $arr = [
-            'btc,eth',
-            'btc,xrp',
-
-            'eth,btc',
-            'eth,xrp',
-
-            'xrp,btc',
-            'xrp,eth'
-        ];
-
+        $arr = $this->getPairings();
         $trade_index = array_rand($arr);
 
         $combinations = explode(",", $arr[$trade_index]);
@@ -284,7 +246,7 @@ class TradingBot extends Command
             $trades->trade_currency = $second;
             $trades->bot_name = $bot_info->bot_name;
             $trades->bot_image = $bot_info->bot_image;
-    
+
             $trades->save();
             broadcast(new TradePosted($trades));
             $this->line("Bot 5 Done");
