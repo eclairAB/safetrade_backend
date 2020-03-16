@@ -24,6 +24,9 @@ Route::group(['middleware' => 'cors'], function(){
 });
 
 Route::group(['middleware' => 'auth:api', 'cors'], function(){
+
+  Route::get('sample/lazy', 'UserWalletController@sampleLazy');
+
 	Route::post('details', 'Auth\UserController@details');
 	Route::post('update/user', 'Auth\UserController@updateProfile');
 	Route::get('my/currencies', 'UserWalletController@myCurrencies');

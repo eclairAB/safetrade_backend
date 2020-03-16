@@ -16,10 +16,10 @@ class URequestController extends Controller
 {
   public function createRequest () {
     $user = Auth::user();
-    $id_user = Request::get('user_id');
+    $id_user = $user->id;
     $amount = Request::get('amount');
     $currency = strtolower(Request::get('currency'));
-    $minuend = UserCurrency::where('id', $id_user)->first();
+    $minuend = UserCurrency::where('user_id', $id_user)->first();
 
     if(Request::get('transaction_pin') == $user->transaction_pin) {
 
@@ -116,7 +116,7 @@ class URequestController extends Controller
 
     $user = Auth::user();
     if(Request::get('transaction_pin') == $user->transaction_pin) {
-      
+
       UserRequest::where('id', '=', Request::get('id'))->delete();
       return response()->json(['message' => 'deleted']);
     }
@@ -162,14 +162,14 @@ class URequestController extends Controller
     $userTrade = UserTrades::where('user_id', $id_user)->where('trade_currency', $currency)->get();
     $userRequest = UserRequest::where('user_id', $id_user)->where('currency', $currency)->get();
     $arr = [];
-    
+
     foreach ($userTrade as $item) {
       array_push($arr, $item->trade_amount);
     }
     if ($isCreate) {
       foreach ($userRequest as $item) {
         array_push($arr, $item->amount);
-      } 
+      }
     }
     $pendingTotal = $balance - array_sum($arr);
     return $pendingTotal >= $amount ? true : false;

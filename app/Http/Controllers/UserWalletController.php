@@ -17,6 +17,15 @@ use DB;
 
 class UserWalletController extends Controller
 {
+    public function sampleLazy() {
+      // dd("sample lazy");
+      $user = User::pluck('username','id')->skip(1)->take(2)->get();
+      // $user = $user->skip(2);
+      // $user->all();
+
+      return response()->json(compact('user'));
+    }
+
     public function myCurrencies()
     {
         $data = [];
@@ -147,7 +156,7 @@ class UserWalletController extends Controller
     public function postUserTrade()
     {
        $user = Auth::user();
-       $trades = UserTrades::where('status',1)->where('user_id',$user->id)->get();
+       $trades = UserTrades::where('status',1)->where('user_id',$user->id)->where('trade_currency', Request::get('trade_currency'))->get();
        $get_balance = UserCurrency::where('user_id',$user->id)->first();
 
        if($trades->count() > 0){
@@ -164,6 +173,7 @@ class UserWalletController extends Controller
            $my_current_trades = doubleval($data);
            $diff_balance = ($my_balance - $my_current_trades);
            $onhold_balance = doubleval($diff_balance);
+
            if(Request::get('trade_amount') > $onhold_balance){
                return response()->json(['message' => 'Currently, you have a pending trade. It will exceed your balance with this transaction.']);
            }else{
