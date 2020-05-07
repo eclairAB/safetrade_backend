@@ -28,8 +28,23 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         $ts = date('Y-m-d-H-i-s');
-        $schedule->command('trade:bot')->cron('*/10 * * * *')->sendOutputTo(storage_path('logs/trade-bot-'.$ts.'.log'));
-        $schedule->command('accept:trade')->cron('*/1 * * * *')->sendOutputTo(storage_path('logs/accept-trade-'.$ts.'.log'));
+        // $schedule->command('trading:bot')->cron('* * * * *')->sendOutputTo(storage_path('logs/trading-bot-'.$ts.'.log'));
+        // $schedule->command('accept:trade')->cron('*/2 * * * *')->sendOutputTo(storage_path('logs/accept-trade-'.$ts.'.log'));
+
+        $schedule->command('botpost:one')->cron('1 * * * *')->sendOutputTo(storage_path('logs/botpostone-'.$ts.'.log'));
+        $schedule->command('bottrade:one')->cron('2 * * * *')->sendOutputTo(storage_path('logs/bottradeone-'.$ts.'.log'));
+
+        $schedule->command('botpost:two')->cron('2 * * * *')->sendOutputTo(storage_path('logs/botposttwo-'.$ts.'.log'));
+        $schedule->command('bottrade:two')->cron('3 * * * *')->sendOutputTo(storage_path('logs/bottradetwo-'.$ts.'.log'));
+
+        $schedule->command('botpost:three')->cron('3 * * * *')->sendOutputTo(storage_path('logs/botpostthree-'.$ts.'.log'));
+        $schedule->command('bottrade:three')->cron('4 * * * *')->sendOutputTo(storage_path('logs/bottradethree-'.$ts.'.log'));
+
+        $schedule->command('botpost:four')->cron('4 * * * *')->sendOutputTo(storage_path('logs/botpostfour-'.$ts.'.log'));
+        $schedule->command('bottrade:four')->cron('5 * * * *')->sendOutputTo(storage_path('logs/bottradefour-'.$ts.'.log'));
+
+        $schedule->command('botpost:five')->cron('5 * * * *')->sendOutputTo(storage_path('logs/botpostfive-'.$ts.'.log'));
+        $schedule->command('bottrade:five')->cron('6 * * * *')->sendOutputTo(storage_path('logs/bottradefive-'.$ts.'.log'));
     }
 
     /**
