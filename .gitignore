@@ -10,3 +10,7 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 laravel-echo-server.lock
+.dir-locals.el
+.log
+.ac-php-conf.json
+_ide_helper.php
