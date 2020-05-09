@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Laravel CORS
@@ -12,11 +11,11 @@ return [
     |
     */
 
-    'supportsCredentials' => false,
-    'allowedOrigins' => ['*'],
-    'allowedHeaders' => ['*'],
-    'allowedMethods' => ['*'],
-    'exposedHeaders' => [],
-    'maxAge' => 0,
-
+    'paths' => ['api/*'],
+    'supports_credentials' => true,
+    'allowed_origins' => ['*'],
+    'allowed_headers' => ['*'],
+    'allowed_methods' => ['*'],
+    'exposed_headers' => [],
+    'max_age' => 0,
 ];

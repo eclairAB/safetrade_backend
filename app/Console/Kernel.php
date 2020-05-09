@@ -4,7 +4,6 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel
 {
@@ -80,9 +79,7 @@ class Kernel extends ConsoleKernel
         $schedule
             ->command('generate:random-bets cash')
             ->everyMinute()
-            ->appendOutputTo(
-                storage_path('logs/random-bets-' . $dateString . '.log')
-            );
+            ->appendOutputTo(storage_path('logs/random-bets-' . $ts . '.log'));
 
         $schedule
             ->command('asset:compute-price cash')
@@ -90,7 +87,7 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->everyMinute()
             ->appendOutputTo(
-                storage_path('logs/compute-price-cash-' . $dateString . '.log')
+                storage_path('logs/compute-price-cash-' . $ts . '.log')
             );
     }
 

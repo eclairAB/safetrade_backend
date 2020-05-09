@@ -17,13 +17,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => 'cors'], function () {
-    Route::post('login', 'Auth\UserController@login');
-    Route::get('getProfile/{uid}', 'Auth\UserController@getProfile');
-    Route::post('register', 'Auth\UserController@register');
-});
+Route::post('login', 'Auth\UserController@login');
+Route::get('getProfile/{uid}', 'Auth\UserController@getProfile');
+Route::post('register', 'Auth\UserController@register');
 
-Route::group(['middleware' => 'auth:api', 'cors'], function () {
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
     Route::get('sample/lazy', 'UserWalletController@sampleLazy');
 
     Route::post('details', 'Auth\UserController@details');
@@ -80,19 +81,6 @@ Route::group(['middleware' => 'auth:api', 'cors'], function () {
     )->only(['index']);
     Route::resource('assets.bets', 'AssetBetController')->only(['index']);
 });
-
-Route::group(
-    ['namespace' => 'Auth', 'middleware' => 'auth:api', 'prefix' => 'password'],
-    function () {
-        Route::post('create', 'PasswordResetController@create');
-        Route::get('find/{token}', 'PasswordResetController@find');
-        Route::post('reset', 'PasswordResetController@reset');
-        Route::resource('assets', 'AssetController')->except([
-            'create',
-            'edit',
-        ]);
-    }
-);
 
 Route::group(
     ['namespace' => 'Auth', 'middleware' => 'auth:api', 'prefix' => 'password'],
