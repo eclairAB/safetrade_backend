@@ -13,4 +13,5 @@ laravel-echo-server.lock
 .dir-locals.el
 .log
 .ac-php-conf.json
+.phpstorm.meta.php
 _ide_helper.php
