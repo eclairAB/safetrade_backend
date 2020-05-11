@@ -55,7 +55,9 @@ class GenerateRandomBets extends Command
         }
 
         foreach ($botUsers as $user) {
-            GenerateRandomBetsJob::dispatch($asset, $user, $timestamp);
+            GenerateRandomBetsJob::dispatch($asset, $user, $timestamp)->onQueue(
+                'assets'
+            );
             $this->info('Generating bet for user: ' . $user->username);
         }
         $this->info('End: GenerateRandomBets');

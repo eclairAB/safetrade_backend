@@ -51,7 +51,9 @@ class ComputeAssetPrice extends Command
         $this->info('Start: ComputeAssetPrice job for asset: ' . $asset->name);
         $count = 1;
         while ($count <= 60) {
-            ComputeAssetPriceJob::dispatch($asset, $timestamp);
+            ComputeAssetPriceJob::dispatch($asset, $timestamp)->onQueue(
+                'assets'
+            );
             $count++;
             $timestamp = $timestamp->addSecond();
             sleep(1);

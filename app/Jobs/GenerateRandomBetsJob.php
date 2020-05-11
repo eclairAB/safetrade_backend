@@ -52,7 +52,7 @@ class GenerateRandomBetsJob implements ShouldQueue
         $count = 1;
         while ($count <= 60) {
             $amount = mt_rand($betAmount->min, $betAmount->max);
-            $userBet = UserBet::create([
+            UserBet::create([
                 'user_id' => $this->user->id,
                 'asset_id' => $this->asset->id,
                 'timestamp' => $this->timestamp,
