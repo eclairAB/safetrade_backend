@@ -8,6 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
+use App\Events\AssetPriceUpdated;
 use App\Asset;
 use App\AssetPriceHistory;
 use App\UserBet;
@@ -32,10 +33,10 @@ class ComputeAssetPriceJob implements ShouldQueue
 
     private function getBets($fromTimestamp, $toTimestamp, $willGoUp)
     {
-        return UserBet::where('will_go_up', $willGoUp)->whereBetween(
-            'timestamp',
-            [$fromTimestamp, $toTimestamp]
-        );
+        return UserBet::where(
+            'will_go_up',
+            $willGoUp
+        )->whereBetween('timestamp', [$fromTimestamp, $toTimestamp]);
     }
 
     private function getUpBets($fromTimestamp, $toTimestamp)
@@ -51,15 +52,16 @@ class ComputeAssetPriceJob implements ShouldQueue
     private function setPrice($lastPrice, $toTimestamp, $upTotal, $downTotal)
     {
         $diff = $upTotal - $downTotal;
-        return AssetPriceHistory::updateOrCreate(
+        $price = AssetPriceHistory::updateOrCreate(
             [
                 'asset_id' => $this->assetId,
-                'timestamp' => $toTimestamp
+                'timestamp' => $toTimestamp,
             ],
             [
-                'price' => $lastPrice->price - $diff
+                'price' => $lastPrice->price - $diff,
             ]
         );
+        event(new AssetPriceUpdated($price));
     }
 
     /**
