@@ -57,8 +57,9 @@ class GenerateRandomBetsJob implements ShouldQueue
                 'asset_id' => $this->asset->id,
                 'timestamp' => $this->timestamp,
                 'amount' => $amount,
-                'will_go_up' => $choices[array_rand($choices)]
+                'will_go_up' => $choices[array_rand($choices)],
             ]);
+            $this->info('Created Bet: ' . $userBet->user_id);
             $this->timestamp = $this->timestamp->addSecond();
             $count++;
         }
