@@ -13,7 +13,7 @@ use App\AssetPriceHistory;
 class AssetPriceUpdated implements ShouldBroadCast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $assetPrice;
+    public $data;
 
     /**
      * Create a new event instance.
@@ -22,7 +22,10 @@ class AssetPriceUpdated implements ShouldBroadCast
      */
     public function __construct(AssetPriceHistory $price)
     {
-        $this->assetPrice = $price;
+        $this->data = [
+            'timestamp' => $price->timestamp + 1,
+            'price' => $price->price,
+        ];
     }
 
     /**

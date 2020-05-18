@@ -13,6 +13,8 @@ class AssetPriceHistory extends Model
     protected $casts = [
         'timestamp' => 'timestamp',
     ];
+    // protected $dateFormat = 'Y-m-d H:i:s.uO';
+    protected $dateFormat = 'Y-m-d H:i:sO';
 
     public $timestamps = false;
 

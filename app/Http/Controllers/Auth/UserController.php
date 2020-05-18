@@ -67,7 +67,6 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required',
             'c_password' => 'required|same:password',
-            'user_level' => 'required',
             'name_first' => 'required',
             'name_last' => 'required',
             'contact_no' => 'required',
@@ -79,6 +78,8 @@ class UserController extends Controller
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
+        // TODO: Remove this
+        $input['user_level'] = 'user';
         $user = User::create($input);
         $success['token'] = $user->createToken('MyApp')->accessToken;
         $success['username'] = $user->username;
