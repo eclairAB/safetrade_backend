@@ -6,9 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserBet extends Model
 {
+    use \LaravelTreats\Model\Traits\HasCompositePrimaryKey;
+
     public $timestamps = false;
 
-    protected $fillable = ['user_id', 'asset_id', 'amount', 'will_go_up', 'timestamp'];
+    protected $primaryKey = ['user_id', 'asset_id', 'timestamp'];
+
+    protected $fillable = [
+        'user_id',
+        'asset_id',
+        'amount',
+        'will_go_up',
+        'timestamp',
+    ];
 
     public function asset()
     {

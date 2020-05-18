@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
@@ -36,13 +35,13 @@ return [
     */
 
     'guards' => [
-        'web' => [ 
-            'driver' => 'session', 
-            'provider' => 'users', 
-        ], 
-        'api' => [ 
-            'driver' => 'passport', 
-            'provider' => 'users', 
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
         ],
     ],
 
@@ -97,5 +96,4 @@ return [
             'expire' => 60,
         ],
     ],
-
 ];

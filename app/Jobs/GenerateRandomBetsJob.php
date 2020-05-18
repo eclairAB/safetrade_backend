@@ -8,10 +8,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\DB;
 
 use App\Asset;
 use App\User;
-use App\UserBet;
 
 class GenerateRandomBetsJob implements ShouldQueue
 {
@@ -19,22 +19,17 @@ class GenerateRandomBetsJob implements ShouldQueue
 
     protected $asset;
     protected $user;
-    protected $timestamp;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(
-        Asset $asset,
-        User $user,
-        CarbonImmutable $timestamp
-    ) {
+    public function __construct(Asset $asset, User $user)
+    {
         //
         $this->asset = $asset;
         $this->user = $user;
-        $this->timestamp = $timestamp;
     }
 
     /**
@@ -44,24 +39,26 @@ class GenerateRandomBetsJob implements ShouldQueue
      */
     public function handle()
     {
-        $choices = [true, false];
+        $assetId = $this->asset->id;
+        $userId = $this->user->id;
         $betAmount = $this->user->betAmount;
         if (!$betAmount) {
             return;
         }
-        $count = 1;
-        while ($count <= 60) {
-            $amount = mt_rand($betAmount->min, $betAmount->max);
-            UserBet::create([
-                'user_id' => $this->user->id,
-                'asset_id' => $this->asset->id,
-                'timestamp' => $this->timestamp,
-                'amount' => $amount,
-                'will_go_up' => $choices[array_rand($choices)],
-            ]);
-            $this->info('Created Bet: ' . $userBet->user_id);
-            $this->timestamp = $this->timestamp->addSecond();
-            $count++;
-        }
+        $minBet = $betAmount->min;
+        $maxBet = $betAmount->max;
+        DB::select("
+            INSERT INTO user_bets (user_id, asset_id, timestamp, amount, will_go_up)
+            SELECT
+                $userId, $assetId, timestamp, random_between($minBet::int, $maxBet::int),
+                random_between(0, 1)::boolean
+            FROM
+                generate_series(
+                    date_trunc('second', CURRENT_TIMESTAMP),
+                    date_trunc('second', CURRENT_TIMESTAMP + interval '1' day),
+                    '1sec'
+                ) AS timestamp
+            ON CONFLICT DO NOTHING
+        ");
     }
 }

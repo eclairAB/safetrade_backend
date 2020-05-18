@@ -12,6 +12,7 @@ use App\Events\AssetPriceUpdated;
 use App\Asset;
 use App\AssetPriceHistory;
 use App\UserBet;
+use Config;
 
 class ComputeAssetPriceJob implements ShouldQueue
 {
@@ -71,6 +72,7 @@ class ComputeAssetPriceJob implements ShouldQueue
      */
     public function handle()
     {
+        $interval = Config::get('assets.price_computation_interval');
         $this->assetId = $this->asset->id;
         $lastPrice = AssetPriceHistory::where(['asset_id' => $this->assetId])
             ->orderBy('timestamp', 'desc')
@@ -78,7 +80,7 @@ class ComputeAssetPriceJob implements ShouldQueue
             ->first();
 
         $toTimestamp = $this->timestamp;
-        $fromTimestamp = $toTimestamp->subSeconds(8);
+        $fromTimestamp = $toTimestamp->subSeconds($interval);
         $upBets = $this->getUpBets($fromTimestamp, $toTimestamp);
         $downBets = $this->getDownBets($fromTimestamp, $toTimestamp);
 

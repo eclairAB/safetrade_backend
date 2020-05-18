@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class AssetPriceHistory extends Model
 {
+    use \LaravelTreats\Model\Traits\HasCompositePrimaryKey;
+    protected $primaryKey = ['asset_id', 'timestamp'];
+
     protected $fillable = ['asset_id', 'timestamp', 'price'];
     protected $casts = [
-        'timestamp' => 'timestamp'
+        'timestamp' => 'timestamp',
     ];
 
     public $timestamps = false;

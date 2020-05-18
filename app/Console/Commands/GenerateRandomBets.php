@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 
 use App\Jobs\GenerateRandomBetsJob;
@@ -43,7 +42,6 @@ class GenerateRandomBets extends Command
     public function handle()
     {
         $this->info('Start: GenerateRandomBets');
-        $timestamp = CarbonImmutable::now()->startOfSecond();
         // Update to support multiple bots
         $botUsers = User::where('username', 'LIKE', 'safetrade_bot%')->get();
         $asset = Asset::get()
@@ -55,9 +53,7 @@ class GenerateRandomBets extends Command
         }
 
         foreach ($botUsers as $user) {
-            GenerateRandomBetsJob::dispatch($asset, $user, $timestamp)->onQueue(
-                'assets'
-            );
+            GenerateRandomBetsJob::dispatch($asset, $user)->onQueue('bets');
             $this->info('Generating bet for user: ' . $user->username);
         }
         $this->info('End: GenerateRandomBets');

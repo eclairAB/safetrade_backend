@@ -14,13 +14,9 @@ class CreateUserBetsTable extends Migration
     public function up()
     {
         Schema::create('user_bets', function (Blueprint $table) {
-            $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('asset_id');
-            $table
-                ->timestampTz('timestamp')
-                ->nullable()
-                ->default(null);
+            $table->unsignedTinyInteger('asset_id');
+            $table->timestampTz('timestamp');
             $table->decimal('amount', 11, 3);
 
             // The amount the user will gain/lose
@@ -32,6 +28,8 @@ class CreateUserBetsTable extends Migration
             // We use boolean to determine bet to store smallest byte possible
             // true if user bets it will go up, false if it will go down
             $table->boolean('will_go_up');
+
+            $table->primary(['user_id', 'asset_id', 'timestamp']);
 
             $table
                 ->foreign('user_id')

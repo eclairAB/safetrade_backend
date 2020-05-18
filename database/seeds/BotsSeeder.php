@@ -18,18 +18,18 @@ class BotsSeeder extends Seeder
     public function run()
     {
         $asset = Asset::firstOrCreate([
-            'name' => 'cash'
+            'name' => 'cash',
         ]);
         $price = AssetPriceHistory::where([
-            'asset_id' => $asset->id
+            'asset_id' => $asset->id,
         ])->first();
 
         if (!$price) {
             AssetPriceHistory::create([
                 'asset_id' => $asset->id,
                 'price' => 50000000.0,
-                'timestamp' => Carbon::now()
-            ])->first();
+                'timestamp' => Carbon::now(),
+            ]);
         }
         $min = 100.0;
         $max = 500.0;
@@ -37,23 +37,23 @@ class BotsSeeder extends Seeder
             $username = "safetrade_bot{$i}";
             $user = User::updateOrCreate(
                 [
-                    "email" => "{$username}@gmail.com"
+                    "email" => "{$username}@gmail.com",
                 ],
                 [
                     "username" => $username,
                     "name_first" => "Safetrade{$i}",
                     "password" => bcrypt("bot_password"),
-                    "user_level" => "user"
+                    "user_level" => "user",
                 ]
             );
 
             BetAmount::updateOrCreate(
                 [
-                    "user_id" => $user->id
+                    "user_id" => $user->id,
                 ],
                 [
                     "min" => $min,
-                    "max" => $max
+                    "max" => $max,
                 ]
             );
             $min += 200.0;

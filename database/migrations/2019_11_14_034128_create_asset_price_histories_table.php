@@ -14,13 +14,11 @@ class CreateAssetPriceHistoriesTable extends Migration
     public function up()
     {
         Schema::create('asset_price_histories', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('asset_id');
-            $table
-                ->timestampTz('timestamp')
-                ->nullable()
-                ->default(null);
+            $table->timestampTz('timestamp');
+            $table->unsignedTinyInteger('asset_id');
             $table->decimal('price', 11, 3);
+
+            $table->primary(['asset_id', 'timestamp']);
             $table
                 ->foreign('asset_id')
                 ->references('id')

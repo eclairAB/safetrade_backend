@@ -16,3 +16,4 @@ laravel-echo-server.lock
 .phpstorm.meta.php
 _ide_helper.php
 readme.html
+/dumps

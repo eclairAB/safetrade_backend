@@ -78,7 +78,7 @@ class Kernel extends ConsoleKernel
 
         $schedule
             ->command('generate:random-bets cash')
-            ->everyMinute()
+            ->daily()
             ->appendOutputTo(storage_path('logs/random-bets-' . $ts . '.log'));
 
         $schedule
