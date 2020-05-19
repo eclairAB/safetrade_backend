@@ -8,8 +8,6 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-use App\AssetPriceHistory;
-
 class AssetPriceUpdated implements ShouldBroadCast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -21,11 +19,11 @@ class AssetPriceUpdated implements ShouldBroadCast
      *
      * @return void
      */
-    public function __construct(AssetPriceHistory $price)
+    public function __construct($timestamp, $price)
     {
         $this->data = [
-            'timestamp' => $price->timestamp,
-            'price' => $price->price,
+            'timestamp' => $timestamp,
+            'price' => $price,
         ];
     }
 

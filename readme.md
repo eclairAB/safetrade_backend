@@ -25,7 +25,7 @@ laravel-echo-server start
 We also use queuing for processing background jobs so you also need to run the queue processor with the following command:
 
 ```
-php artisan queue:work --queue=assets,bets,default
+php artisan queue:work --queue=price,assets,bets,default
 ```
 
 ## Scheduling

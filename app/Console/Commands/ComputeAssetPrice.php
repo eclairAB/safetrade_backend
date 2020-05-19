@@ -4,8 +4,9 @@ namespace App\Console\Commands;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 
-use App\Jobs\ComputeAssetPriceJob;
+use App\Events\AssetPriceUpdated;
 use App\Asset;
 
 class ComputeAssetPrice extends Command
@@ -34,6 +35,29 @@ class ComputeAssetPrice extends Command
     {
         parent::__construct();
     }
+
+    private function getInterval()
+    {
+        $key = 'price-computation-interval';
+        return Cache::get($key, function () {
+            return config('assets.price_computation_interval');
+        });
+    }
+
+    private function getAssetId($name)
+    {
+        $key = 'asset-' . $name;
+        return Cache::get($key, function () {
+            $asset = Asset::get()
+                ->where('name', $this->argument('asset_name'))
+                ->first();
+            if (!$asset) {
+                return null;
+            }
+            return $asset->id;
+        });
+    }
+
     /**
      * Execute the console command.
      *
@@ -42,22 +66,40 @@ class ComputeAssetPrice extends Command
     public function handle()
     {
         $timestamp = CarbonImmutable::now()->startOfSecond();
-        $asset = Asset::get()
-            ->where('name', $this->argument('asset_name'))
-            ->first();
-        if (!$asset) {
-            return;
-        }
-        $this->info('Start: ComputeAssetPrice job for asset: ' . $asset->name);
+        $assetName = $this->argument('asset_name');
+        $this->info('Start: ComputeAssetPrice job for asset: ' . $assetName);
+
+        $assetId = $this->getAssetId($assetName);
+        $interval = $this->getInterval();
+
         $count = 1;
         while ($count <= 60) {
-            ComputeAssetPriceJob::dispatch($asset, $timestamp)->onQueue(
-                'assets'
+            $newPrice = \DB::select("
+                INSERT INTO asset_price_histories(asset_id, timestamp, price)
+                SELECT $assetId, '$timestamp'::timestamp, (price_histories.price - (up_total - down_total)) FROM (
+                    SELECT price FROM asset_price_histories ORDER BY timestamp DESC LIMIT 1) AS price_histories,
+                    (SELECT
+                        SUM(CASE WHEN will_go_up = true THEN amount ELSE 0 END)
+                            AS up_total,
+                        SUM(CASE WHEN will_go_up = false THEN amount ELSE 0 END)
+                            AS down_total
+                    FROM
+                        user_bets
+                    WHERE
+                        asset_id = 1
+                    AND timestamp BETWEEN '$timestamp'::timestamp - INTERVAL '$interval' AND '$timestamp'::timestamp) AS bets
+                RETURNING price;
+            ")[0];
+
+            while ($timestamp == CarbonImmutable::now()->startOfSecond()) {
+                // Wait until it's time
+            }
+            event(
+                new AssetPriceUpdated($timestamp->timestamp, $newPrice->price)
             );
             $count++;
             $timestamp = $timestamp->addSecond();
-            sleep(1);
         }
-        $this->info('End: ComputeAssetPrice job for asset: ' . $asset->name);
+        $this->info('End: ComputeAssetPrice job for asset: ' . $assetName);
     }
 }
