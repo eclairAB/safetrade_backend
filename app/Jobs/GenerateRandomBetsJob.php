@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use Carbon\CarbonImmutable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -47,7 +46,7 @@ class GenerateRandomBetsJob implements ShouldQueue
         }
         $minBet = $betAmount->min;
         $maxBet = $betAmount->max;
-        DB::select("
+        DB::insert("
             INSERT INTO user_bets (user_id, asset_id, timestamp, amount, will_go_up)
             SELECT
                 $userId, $assetId, timestamp, random_between($minBet::int, $maxBet::int),
