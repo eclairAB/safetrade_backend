@@ -11,7 +11,6 @@ use Illuminate\Queue\SerializesModels;
 class AssetPriceUpdated implements ShouldBroadCast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $broadcastQueue = 'price';
     public $data;
 
     /**
