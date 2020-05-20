@@ -86,9 +86,7 @@ class Kernel extends ConsoleKernel
             ->name('compute-price-cash')
             ->withoutOverlapping()
             ->everyMinute()
-            ->appendOutputTo(
-                storage_path('logs/compute-price-cash-' . $ts . '.log')
-            );
+            ->appendOutputTo(storage_path('logs/compute-price-cash.log'));
     }
 
     /**
