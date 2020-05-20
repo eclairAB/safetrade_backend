@@ -12,8 +12,6 @@ class SetTimescaledb extends Migration
      */
     public function up()
     {
-        //
-        DB::statement("CREATE EXTENSION timescaledb");
         DB::statement("SELECT create_hypertable('user_bets', 'timestamp')");
         DB::statement(
             "SELECT create_hypertable('asset_price_histories', 'timestamp')"
