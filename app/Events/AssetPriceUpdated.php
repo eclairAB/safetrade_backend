@@ -18,9 +18,10 @@ class AssetPriceUpdated implements ShouldBroadCast
      *
      * @return void
      */
-    public function __construct($timestamp, $price)
+    public function __construct($assetId, $timestamp, $price)
     {
         $this->data = [
+            'asset_id' => $assetId,
             'timestamp' => $timestamp,
             'price' => $price,
         ];

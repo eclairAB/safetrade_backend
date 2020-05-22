@@ -95,7 +95,11 @@ class ComputeAssetPrice extends Command
                 // Wait until it's time
             }
             event(
-                new AssetPriceUpdated($timestamp->timestamp, $newPrice->price)
+                new AssetPriceUpdated(
+                    $assetId,
+                    $timestamp->timestamp,
+                    $newPrice->price
+                )
             );
             $count++;
             $timestamp = $timestamp->addSecond();
