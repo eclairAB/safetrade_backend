@@ -30,9 +30,10 @@ class AssetControllerTest extends TestCase
     public function testShowAsset()
     {
         $asset = factory(Asset::class)->create();
-        $response = $this->get(route('assets.show', ['id' => $asset->id]));
+        fwrite(STDERR, print_r($asset->id, true));
+        $response = $this->get(route('assets.show', ['asset' => $asset->id]));
         $response->assertStatus(Response::HTTP_OK)->assertJson([
-            'id' => $asset->id
+            'id' => $asset->id,
         ]);
     }
 
@@ -40,11 +41,11 @@ class AssetControllerTest extends TestCase
     {
         $response = $this->json('POST', route('assets.index'), [
             'name' => 'test',
-            'description' => 'description'
+            'description' => 'description',
         ]);
         $response->assertStatus(Response::HTTP_CREATED)->assertJson([
             'name' => 'test',
-            'description' => 'description'
+            'description' => 'description',
         ]);
     }
 
@@ -53,15 +54,15 @@ class AssetControllerTest extends TestCase
         $asset = factory(Asset::class)->create();
         $response = $this->json(
             'PATCH',
-            route('assets.update', ['id' => $asset->id]),
+            route('assets.update', ['asset' => $asset->id]),
             [
                 'name' => 'new name',
-                'description' => 'new description'
+                'description' => 'new description',
             ]
         );
         $response->assertStatus(Response::HTTP_OK)->assertJson([
             'name' => 'new name',
-            'description' => 'new description'
+            'description' => 'new description',
         ]);
     }
 
@@ -69,7 +70,7 @@ class AssetControllerTest extends TestCase
     {
         $asset = factory(Asset::class)->create();
         $response = $this->delete(
-            route('assets.destroy', ['id' => $asset->id])
+            route('assets.destroy', ['asset' => $asset->id])
         );
         $response->assertStatus(Response::HTTP_NO_CONTENT);
     }

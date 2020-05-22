@@ -1,7 +1,6 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use App\User;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
@@ -16,7 +15,7 @@ use Faker\Generator as Faker;
 |
 */
 
-$factory->define(User::class, function (Faker $faker) {
+$factory->define(\App\User::class, function (Faker $faker) {
     return [
         'username' => $faker->unique()->userName,
         'email' => $faker->unique()->safeEmail,
@@ -32,6 +31,6 @@ $factory->define(User::class, function (Faker $faker) {
         'city' => $faker->city,
         'address' => $faker->address,
         'country' => $faker->countryCode,
-        'state' => $faker->state
+        'state' => $faker->state,
     ];
 });

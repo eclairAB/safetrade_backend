@@ -12,10 +12,13 @@ class SetTimescaledb extends Migration
      */
     public function up()
     {
-        DB::statement("SELECT create_hypertable('user_bets', 'timestamp')");
-        DB::statement(
-            "SELECT create_hypertable('asset_price_histories', 'timestamp')"
-        );
+        fwrite(STDERR, print_r(config('env'), true));
+        if (config('app.env') != 'testing') {
+            DB::statement("SELECT create_hypertable('user_bets', 'timestamp')");
+            DB::statement(
+                "SELECT create_hypertable('asset_price_histories', 'timestamp')"
+            );
+        }
     }
 
     /**
@@ -25,6 +28,5 @@ class SetTimescaledb extends Migration
      */
     public function down()
     {
-        //
     }
 }

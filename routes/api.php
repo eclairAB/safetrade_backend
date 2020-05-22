@@ -74,7 +74,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('wallet/approve', 'URequestController@approveRequest');
     Route::post('wallet/delete', 'URequestController@deleteRequest');
 
-    Route::resource('assets', 'AssetController')->except(['create', 'edit']);
+    Route::apiResource('assets', 'AssetController');
     Route::resource(
         'assets.price-history',
         'AssetPriceHistoryController'

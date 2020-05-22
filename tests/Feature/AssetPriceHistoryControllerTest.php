@@ -25,11 +25,14 @@ class AssetPriceHistoryControllerTest extends TestCase
     {
         $asset = factory(Asset::class)->create();
         $price = factory(AssetPriceHistory::class)->create([
-            'asset_id' => $asset->id
+            'asset_id' => $asset->id,
         ]);
+        fwrite(STDERR, print_r($price[0], true));
         $response = $this->get(
-            route('assets.price-history.index', ['assetId' => $asset->id])
+            route('assets.price-history.index', ['asset' => $asset->id])
         );
-        $response->assertStatus(Response::HTTP_OK)->assertJsonCount(1);
+        $response
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJsonPath('data.0.timestamp', $price->timestamp);
     }
 }
