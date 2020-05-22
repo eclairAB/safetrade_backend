@@ -76,7 +76,7 @@ class ComputeAssetPrice extends Command
         while ($count <= 60) {
             $newPrice = \DB::select("
                 INSERT INTO asset_price_histories(asset_id, timestamp, price)
-                SELECT $assetId, '$timestamp'::timestamp, (price_histories.price - (up_total - down_total)) FROM (
+                SELECT $assetId, '$timestamp'::timestamptz, (price_histories.price - (up_total - down_total)) FROM (
                     SELECT price FROM asset_price_histories ORDER BY timestamp DESC LIMIT 1) AS price_histories,
                     (SELECT
                         SUM(CASE WHEN will_go_up = true THEN amount ELSE 0 END)
@@ -87,7 +87,7 @@ class ComputeAssetPrice extends Command
                         user_bets
                     WHERE
                         asset_id = 1
-                    AND timestamp BETWEEN '$timestamp'::timestamp - INTERVAL '$interval' AND '$timestamp'::timestamp) AS bets
+                    AND timestamp BETWEEN '$timestamp'::timestamptz - INTERVAL '$interval' AND '$timestamp'::timestamptz) AS bets
                 RETURNING price;
             ")[0];
 
