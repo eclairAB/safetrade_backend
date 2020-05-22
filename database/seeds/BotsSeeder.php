@@ -43,7 +43,6 @@ class BotsSeeder extends Seeder
                     "username" => $username,
                     "name_first" => "Safetrade{$i}",
                     "password" => bcrypt("bot_password"),
-                    "user_level" => "user",
                 ]
             );
 

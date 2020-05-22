@@ -22,7 +22,6 @@ $factory->define(\App\User::class, function (Faker $faker) {
         'email_verified_at' => now(),
         'password' => 'password', // password
         'remember_token' => Str::random(10),
-        'user_level' => 'test',
         'name_first' => $faker->firstName,
         'name_last' => $faker->lastName,
         'contact_no' => $faker->phoneNumber,

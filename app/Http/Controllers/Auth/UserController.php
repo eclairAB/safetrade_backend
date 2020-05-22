@@ -44,7 +44,6 @@ class UserController extends Controller
                 'email',
                 'password',
                 'user_display_pic',
-                'user_level',
                 'name_first',
                 'name_last',
                 'contact_no',
@@ -54,6 +53,8 @@ class UserController extends Controller
                 'address',
                 'country',
                 'state',
+                'is_staff',
+                'is_superuser',
             ])
             ->find($uid);
 
@@ -78,12 +79,9 @@ class UserController extends Controller
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
-        // TODO: Remove this
-        $input['user_level'] = 'user';
         $user = User::create($input);
         $success['token'] = $user->createToken('MyApp')->accessToken;
         $success['username'] = $user->username;
-        $success['user_level'] = $user->user_level;
         $success['name_first'] = $user->name_first;
         $success['name_last'] = $user->name_last;
         $success['contact_no'] = $user->contact_no;

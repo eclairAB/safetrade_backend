@@ -21,7 +21,6 @@ class User extends Authenticatable
         'password',
         'type',
         'user_display_pic',
-        'user_level',
         'name_first',
         'name_last',
         'contact_no',
@@ -31,7 +30,7 @@ class User extends Authenticatable
         'address',
         'country',
         'state',
-        'transaction_pin'
+        'transaction_pin',
     ];
 
     /**
