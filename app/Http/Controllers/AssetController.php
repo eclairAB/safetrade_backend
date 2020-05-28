@@ -17,7 +17,7 @@ class AssetController extends Controller
     public function index()
     {
         $assets = Asset::all();
-        return $assets->toJson();
+        return response()->json($assets);
     }
 
     /**

@@ -12,11 +12,6 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('login', 'Auth\UserController@login');
 Route::get('getProfile/{uid}', 'Auth\UserController@getProfile');
 Route::post('register', 'Auth\UserController@register');
@@ -75,11 +70,15 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('wallet/delete', 'URequestController@deleteRequest');
 
     Route::apiResource('assets', 'AssetController');
+    Route::resource('bets', 'UserBetController')->only(['index']);
     Route::resource(
         'assets.price-history',
         'AssetPriceHistoryController'
     )->only(['index']);
-    Route::resource('assets.bets', 'AssetBetController')->only(['index']);
+    Route::resource('assets.bets', 'AssetBetController')->only([
+        'index',
+        'store',
+    ]);
 });
 
 Route::group(

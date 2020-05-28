@@ -1,0 +1,28 @@
+image: php:7.4-fpm
+
+pipelines:
+  default:
+    - step:
+        script:
+          - apt-get update && apt-get install -qy git curl libmcrypt-dev psql-client
+          - yes | pecl install mcrypt-1.0.1
+          - docker-php-ext-install pdo_psql
+          - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+          - composer install
+          - ln -f -s .env.pipelines .env
+          - php artisan migrate
+          - php artisan serve &
+          - sleep 5
+          - ./vendor/bin/phpunit
+          - curl -vk http://localhost:8000
+        services:
+          - postgres
+
+definitions:
+  services:
+    postgres:
+      image: postgres:10.12
+      environment:
+        POSTGRES_DB: 'safetrade_test'
+        POSTGRES_USER: 'homestead'
+        POSTGRES_PASSWORD: 'secret'

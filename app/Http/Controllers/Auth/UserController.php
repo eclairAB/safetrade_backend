@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
-// use Request;
+use Symfony\Component\HttpFoundation\Response;
+
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\UserCurrency;
@@ -22,21 +23,19 @@ class UserController extends Controller
                 'password' => request('password'),
             ])
         ) {
-            $success = Auth::user();
-            $success['token'] = $success->createToken('MyApp')->accessToken;
-            return response()->json(
-                ['success' => $success, 'id' => $success->id],
-                $this->successStatus
-            );
+            $user = Auth::user();
+            $user['token'] = $user->createToken('MyApp')->accessToken;
+            return response()->json($user);
         } else {
-            return response()->json(['error' => 'Unauthorised'], 401);
+            return response()->json(
+                ['error' => 'Invalid credentials'],
+                Response::HTTP_UNAUTHORIZED
+            );
         }
     }
 
     public function getProfile($uid)
     {
-        // return User::find($uid);
-
         $users = User::select($uid)
             ->select([
                 'id',
@@ -65,7 +64,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'username' => 'required|unique:users',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users',
             'password' => 'required',
             'c_password' => 'required|same:password',
             'name_first' => 'required',
@@ -74,23 +73,16 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+            return response()->json(
+                ['errors' => $validator->errors()],
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-        $success['token'] = $user->createToken('MyApp')->accessToken;
-        $success['username'] = $user->username;
-        $success['name_first'] = $user->name_first;
-        $success['name_last'] = $user->name_last;
-        $success['contact_no'] = $user->contact_no;
-        $success['birth_date'] = $user->birth_date;
-        $success['zip_code'] = $user->zip_code;
-        $success['city'] = $user->city;
-        $success['address'] = $user->address;
-        $success['country'] = $user->country;
-        $success['state'] = $user->state;
+        $user['token'] = $user->createToken('MyApp')->accessToken;
 
         $wallet = new UserCurrency();
         $wallet->user_id = $user->id;
@@ -106,10 +98,7 @@ class UserController extends Controller
         $wallet->trx = '0.0000000000';
         $wallet->cash = '0.0000000000';
         $wallet->save();
-        return response()->json(
-            ['success' => $success, 'id' => $user->id],
-            $this->successStatus
-        );
+        return response()->json($user, Response::HTTP_CREATED);
     }
 
     public function details()

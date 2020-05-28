@@ -15,8 +15,10 @@ class AssetPriceHistoryController extends Controller
     public function index($assetId)
     {
         $asset = Asset::findOrFail($assetId);
-        return AssetPriceHistory::where('asset_id', $asset->id)
-            ->orderBy('timestamp', 'desc')
-            ->paginate(1000);
+        return response()->json(
+            AssetPriceHistory::where('asset_id', $asset->id)
+                ->orderBy('timestamp', 'desc')
+                ->paginate(1000)
+        );
     }
 }
