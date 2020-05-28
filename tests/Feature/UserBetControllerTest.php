@@ -14,7 +14,6 @@ use App\UserBet;
 class UserBetControllerTest extends TestCase
 {
     use DatabaseTransactions;
-    protected User $user;
 
     public function setUp(): void
     {

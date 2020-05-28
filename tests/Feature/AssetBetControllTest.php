@@ -13,7 +13,6 @@ use App\User;
 class AssetBetControllTest extends TestCase
 {
     use DatabaseTransactions;
-    protected User $user;
 
     public function setUp(): void
     {
