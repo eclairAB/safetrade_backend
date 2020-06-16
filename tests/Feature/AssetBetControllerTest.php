@@ -10,7 +10,7 @@ use Tests\TestCase;
 use App\Asset;
 use App\User;
 
-class AssetBetControllTest extends TestCase
+class AssetBetControllerTest extends TestCase
 {
     use DatabaseTransactions;
 
