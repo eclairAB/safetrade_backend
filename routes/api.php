@@ -28,7 +28,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('loadwallet', 'UserWalletController@loadWallet');
     Route::post('search/other/user', 'UserWalletController@searchOtherUser');
     Route::post(
-        'update/user/dp/{id}',
+        'update/user/dp',
         'Auth\UserController@updateProfilePicture'
     );
     Route::post(
