@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Traits\UploadTrait;
 use App\UserCurrency;
 use App\User;
 use Auth;
@@ -14,6 +15,7 @@ use Auth;
 class UserController extends Controller
 {
     public $successStatus = 200;
+    use UploadTrait;
 
     public function login()
     {
@@ -107,28 +109,33 @@ class UserController extends Controller
         return response()->json(['success' => $user], $this->successStatus);
     }
 
-    public function updateProfilePicture(Request $request, $id)
-    {
-        $user = Auth::user();
+    public function updateProfilePicture(Request $request) {
+      if  (auth()->user()) {
+        if ($request->transaction_pin == Auth::user()->transaction_pin) {
+          $request->validate([
+              'user_display_pic'     =>  'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+          ]);
 
-        if ($request->transaction_pin == $user->transaction_pin) {
-            $validator = Validator::make($request->all(), [
-                'user_display_pic' => 'required',
-            ]);
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], 401);
-            }
+          $user = User::findOrFail(auth()->user()->id);
+          $email = Auth::user()->email;
 
-            $user = User::find($id);
-            $user->user_display_pic = $request->input('user_display_pic');
-            $user->save();
+          if ($request->has('user_display_pic')) {
+              $image = $request->file('user_display_pic');
+              $folder = '/uploads/images/';
+              $filePath = $folder . $email. '.' . $image->getClientOriginalExtension();
+              $this->uploadOne($image, $folder, 'public', $email);
+              $user->user_display_pic = $filePath;
+          }
+          $user->save();
 
-            return response()->json(compact('user'));
+          // Return user back and show a flash message
+          // return redirect()->back()->with(['status' => 'Profile updated successfully.']);
         } else {
-            return response()->json([
-                'message' => 'Incorrect Transaction Pin!',
-            ]);
+          return response()->json([
+              'message' => 'Incorrect Transaction Pin!',
+          ]);
         }
+      }
     }
 
     public function updateProfileBasic(Request $request, $id)
