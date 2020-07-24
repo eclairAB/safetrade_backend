@@ -1,6 +1,7 @@
 /node_modules
 /public/hot
 /public/storage
+/public/.htaccess
 /storage/*.key
 /vendor
 .env
@@ -19,3 +20,6 @@ laravel-echo-server.json
 _ide_helper.php
 readme.html
 /dumps
+
+#phpstorm
+.idea/

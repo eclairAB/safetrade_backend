@@ -51,7 +51,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('trade/list', 'ViewController@tradeList');
     Route::get('trade/dashboard', 'ViewController@tradeListDashboard');
     Route::get(
-        'check/trader/balance/{id}/{trader_id}',
+        'check/trader/balance/{id}_/{trader_id}',
         'UserWalletController@checkTheTraderBalance'
     );
     Route::post(
@@ -75,7 +75,13 @@ Route::group(['middleware' => 'auth:api'], function () {
         'assets.price-history',
         'AssetPriceHistoryController'
     )->only(['index']);
+
     Route::resource('assets.bets', 'AssetBetController')->only([
+        'index',
+        'store',
+    ]);
+
+    Route::resource('user-assets','UserAssetController')->only([
         'index',
         'store',
     ]);
