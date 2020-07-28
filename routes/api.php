@@ -84,6 +84,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('user-assets','UserAssetController')->only([
         'index',
         'store',
+        'update',
+        'delete',
     ]);
 });
 
