@@ -84,15 +84,37 @@ class UserAssetController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //find id
+        //find row id
+        try {
+            $row = UserAsset::find($id);
+        }catch (\Exception $e){
+            return response()->json(['message' => 'Something went wrong.', 'error' => $e]);
+        }
         // return if not found
-
+        if(!$row){
+            return response()->json(['message'=>'No user asset found.']);
+        }
         //add or subtract amount
-        //return if the result amount will be negative
+        try {
+            $total= $row->amount + $request->add;
+        }catch (\Exception $e){
+            return response()->json(['message' => 'Amount entered is invalid.']);
+        }
+        //return an error if the result amount will be negative
+        if($total<0){
+            return response()->json(['message'=>'Cannot continue transaction. Insufficient fund.']);
+        }
         //update the amount
+        try {
+            $row->amount = $total;
+            $row->save();
+        }catch (\Exception $e){
+            return response()->json([
+                'message' => 'Something went wrong during the transaction. Transaction not saved.',
+                'error' => $e]);
+        }
         //return the amount
-
-//        return ([$request,$id]);
+        return response()->json(['message' => 'Transaction saved successfully', 'data' => $row]);
     }
 
     /**
@@ -103,7 +125,19 @@ class UserAssetController extends Controller
      */
     public function destroy($id)
     {
-        //Soft delete?
         //If permanently deleted, should we save a history log?
+        try {
+            $row = UserAsset::find($id);
+        }catch (\Exception $e){
+            return response()->json(['message'=>'No user asset found.','error'=>$e]);
+        }
+
+        if($row){
+            //must create a log for deleted user's asset here.
+            $row->delete();
+
+            return response()->json(['message'=>'User asset successfully deleted.']);
+        }
+        return response()->json(['message'=>'No user asset found.']);
     }
 }

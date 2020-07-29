@@ -85,7 +85,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         'index',
         'store',
         'update',
-        'delete',
+        'destroy',
     ]);
 });
 
