@@ -147,12 +147,6 @@ class UserController extends Controller
                 'name_first' => 'required',
                 'name_last' => 'required',
                 'contact_no' => 'required',
-                'birth_date' => 'required',
-                'zip_code' => 'required',
-                'city' => 'required',
-                'address' => 'required',
-                'country' => 'required',
-                'state' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()], 401);
