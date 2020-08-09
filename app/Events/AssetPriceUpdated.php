@@ -8,6 +8,8 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+use App\UserBet;
+
 class AssetPriceUpdated implements ShouldBroadCast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -18,13 +20,25 @@ class AssetPriceUpdated implements ShouldBroadCast
      *
      * @return void
      */
-    public function __construct($assetId, $timestamp, $price)
-    {
+    public function __construct(
+        $assetId,
+        $timestamp,
+        $price,
+        UserBet $userBet = null
+    ) {
         $this->data = [
             'asset_id' => $assetId,
             'timestamp' => $timestamp,
             'price' => $price,
+            'betData' => null,
         ];
+        if ($userBet) {
+            $this->data['betData'] = [
+                'up' => $userBet->will_go_up,
+                'amount' => $userBet->amount,
+                'timestamp' => strtotime($userBet->timestamp),
+            ];
+        }
     }
 
     /**
