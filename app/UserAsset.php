@@ -11,4 +11,9 @@ class UserAsset extends Model
         'asset_id',
         'amount',
     ];
+
+    public function asset()
+    {
+        return $this->belongsTo(Asset::class);
+    }
 }

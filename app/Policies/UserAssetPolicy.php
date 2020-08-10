@@ -23,17 +23,20 @@ class UserAssetPolicy
         return $user->is_superuser;
     }
 
-//    /**
-//     * Determine whether the user can view the model.
-//     *
-//     * @param  \App\User  $user
-//     * @param  \App\UserAsset  $userAsset
-//     * @return mixed
-//     */
-//    public function view(User $user, UserAsset $userAsset)
-//    {
-//        return true;
-//    }
+    /**
+     * Determine whether the user can view the model.
+     *
+     * @param  \App\User  $user
+     * @param  \App\UserAsset  $userAsset
+     * @return mixed
+     */
+    public function view(User $user, UserAsset $userAsset)
+    {
+        if($user->is_superuser)
+            return true;
+        else
+            return $user->id === $userAsset->user_id;
+    }
 
     /**
      * Determine whether the user can create models.

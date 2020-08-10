@@ -8,7 +8,6 @@ use App\Http\Requests\UserAssetStoreRequest;
 
 class UserAssetController extends Controller
 {
-
     /**
      * Display lists of users' assets.
      *
@@ -16,9 +15,15 @@ class UserAssetController extends Controller
      */
     public function index()
     {
-        $this->authorize('view-any',UserAsset::class);
-        $users_with_assets = UserAsset::paginate(15);
-        return response()->json(compact('users_with_assets'), 200);
+        $user= \Auth::user();
+        if($user->can('view-any',UserAsset::class)){
+            $users_with_assets = UserAsset::with('asset')->paginate(15);
+            return response()->json(compact('users_with_assets'), 200);
+        }
+        else{
+            $own_assets = UserAsset::with('asset')->where('user_id', $user->id)->paginate(15);
+            return $own_assets;
+        }
     }
 
     /**
@@ -35,16 +40,17 @@ class UserAssetController extends Controller
         return response()->json(['message' => 'Successfully created.'],201);
     }
 
-//    /**
-//     * Display the specified resource.
-//     *
-//     * @param  int  $id
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function show($id)
-//    {
-//        return $id;
-//    }
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(UserAsset $userAsset)
+    {
+        $this->authorize('view', $userAsset);
+        return response()->json([$userAsset, $userAsset['asset']],200);
+    }
 //
 //    /**
 //     * Show the form for editing the specified resource.
