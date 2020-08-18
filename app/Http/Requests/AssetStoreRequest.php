@@ -13,7 +13,14 @@ class AssetStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->user()->is_superuser;
+    }
+
+    public function prepareForValidation()
+    {
+        $this->merge([
+            'name' => strtolower($this->name)
+        ]);
     }
 
     /**
@@ -23,9 +30,19 @@ class AssetStoreRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name' => 'string|required',
-            'description' => 'string'
+        $rules =[
+            'name' => 'string|required|unique:assets,name',
+            'description' => 'string|required'
         ];
+
+        if (in_array($this->method(), ['PUT', 'PATCH'])){
+            $rules = [
+                'name' => 'string|required',
+                'description' => 'string|required'
+            ];
+        }
+        return $rules;
     }
+
+
 }
