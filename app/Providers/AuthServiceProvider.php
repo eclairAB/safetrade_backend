@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Policies\AssetBetPolicy;
 use App\Policies\UserAssetPolicy;
 use App\UserAsset;
+use App\UserBet;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -17,6 +19,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
 //        'App\Model' => 'App\Policies\ModelPolicy',
         UserAsset::class => UserAssetPolicy::class,
+        UserBet::class => AssetBetPolicy::class,
     ];
 
     /**

@@ -16,4 +16,8 @@ class UserAsset extends Model
     {
         return $this->belongsTo(Asset::class);
     }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }

@@ -49,11 +49,16 @@ class User extends Authenticatable
 
     public function bets()
     {
-        return $this->hasMany('App\UserBet');
+        return $this->hasMany(UserBet::class);
     }
 
     public function betAmount()
     {
-        return $this->hasOne('App\BetAmount');
+        return $this->hasOne(BetAmount::class);
+    }
+
+    public function assets()
+    {
+        return $this->hasMany(UserAsset::class);
     }
 }
