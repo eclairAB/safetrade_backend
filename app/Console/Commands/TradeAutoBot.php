@@ -85,8 +85,8 @@ class TradeAutoBot extends Command
         $first_index = array_rand($first_wallets);
         $second_index = array_rand($second_wallets);
 
-        $bot_wallets = UserCurrency::whereIn('user_id', [3,4,5,6,7])->get();
-        $bot_active_trade = UserTrades::whereIn('user_id', [3,4,5,6,7])->where('status',1)->get();
+        $bot_wallets = UserCurrency::whereIn('user_id', [1,2,3,4,5])->get();
+        $bot_active_trade = UserTrades::whereIn('user_id', [1,2,3,4,5])->where('status',1)->get();
 
 
         if($bot_active_trade->count() > 0){

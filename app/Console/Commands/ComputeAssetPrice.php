@@ -73,7 +73,7 @@ class ComputeAssetPrice extends Command
         $interval = $this->getInterval();
 
         $count = 1;
-        while ($count <= 60) {
+        while ($count <= 1800) {
             $newPrice = \DB::select("
                 INSERT INTO asset_price_histories(asset_id, timestamp, price)
                 SELECT $assetId, '$timestamp'::timestamptz, (price_histories.price - (up_total - down_total)) FROM (
