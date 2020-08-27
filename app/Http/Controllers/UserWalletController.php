@@ -251,7 +251,7 @@ class UserWalletController extends Controller
         //checker kung unsa ang gusto sa wallet sa creator ug trade.
         $trader_wallet_currency = $selected_trade->request_currency;
 
-        if($selected_trade->user_id > 2 && $selected_trade->user_id < 8){
+        if($this->isBot($selected_trade->username)){
             return response()->json(['message' => 'This trade is already acquired by other user.']);
         }else{
             //1st for security purpose mag input ug transaction pin para maka trade kung mali Incorrect Transaction Pin!.
@@ -298,6 +298,14 @@ class UserWalletController extends Controller
                 return response()->json(['message' => 'Incorrect Transaction Pin!']);
             }
         }
+    }
+
+    function isBot($username)
+    {
+        $u = $username;
+        $bot=['safetrade_bot1','safetrade_bot2','safetrade_bot3','safetrade_bot4','safetrade_bot5'];
+        if($u == $bot[0] || $u == $bot[1] || $u == $bot[2] || $u == $bot[3] || $u == $bot[4]) return true;
+        else return false;
     }
 
     public function monitorUserTransaction()

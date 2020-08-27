@@ -39,7 +39,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('filter/byCurrency', 'ViewController@filterHistorybyCurrency');
     Route::get('trade/list', 'ViewController@tradeList');
     Route::get('trade/dashboard', 'ViewController@tradeListDashboard');
-    Route::get('check/trader/balance/{id}_/{trader_id}', 'UserWalletController@checkTheTraderBalance');
+    Route::get('check/trader/balance/{id}/{trader_id}', 'UserWalletController@checkTheTraderBalance');
     Route::post('monitor/user/transaction', 'UserWalletController@monitorUserTransaction');
     Route::post('avoid/user/transfer/{id}', 'UserWalletController@avoidUserTransfer');
     Route::post('delete/myTrade/{id}', 'UserWalletController@destroy');

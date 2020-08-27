@@ -50,3 +50,9 @@ To sum it up, we need to run several processes:
 1. `laravel-echo-server start`
 1. `php artisan queue:listen`
 1. add cronjob
+
+## Laradock
+
+1. `php artisan queue:work`
+2. `php artisan generate:random-bets cash`
+3. `php artisan asset:compute-price cash`
