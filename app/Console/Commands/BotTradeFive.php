@@ -37,45 +37,44 @@ class BotTradeFive extends Command
 
     public function executeCommand()
     {
-      $list_trade_bot = UserTrades::where('user_id',7)->where('status',1)->first();
-      $bot_3_wallet = UserCurrency::where('user_id',3)->first();
-      $bot_7_wallet = UserCurrency::where('user_id',7)->first();
-
+      $list_trade_bot = UserTrades::where('user_id',5)->where('status',1)->first();
+      $bot_1_wallet = UserCurrency::where('user_id',1)->first();
+      $bot_5_wallet = UserCurrency::where('user_id',5)->first();
 
       if($list_trade_bot != null){
-          $bot3_bal = $list_trade_bot->request_currency;
-          if($list_trade_bot->trade_amount > $bot_3_wallet->$bot3_bal){
-              $this->line("bot3 is out of balance");
+          $bot1_bal = $list_trade_bot->request_currency;
+          if($list_trade_bot->trade_amount > $bot_1_wallet->$bot1_bal){
+              $this->line("bot1 is out of balance");
           }else{
               $value = $list_trade_bot->trade_currency;
-              if($bot_7_wallet->$value >= $list_trade_bot->trade_amount){
+              if($bot_5_wallet->$value >= $list_trade_bot->trade_amount){
                   $history =  new UserHistory;
 
-                  $history->sender_id = 7;
-                  $history->receiver_id = 3;
+                  $history->sender_id = 5;
+                  $history->receiver_id = 1;
                   $history->amount = $list_trade_bot->trade_amount;
                   $history->transaction_option = "trade";
                   $history->currency_trade = $list_trade_bot->trade_currency;
                   $history->currency_request = $list_trade_bot->request_currency;
 
-                  $bot_7_wallet->decrement($list_trade_bot->trade_currency,$list_trade_bot->trade_amount);
-                  $bot_7_wallet->increment($list_trade_bot->request_currency,$list_trade_bot->request_amount);
+                  $bot_5_wallet->decrement($list_trade_bot->trade_currency,$list_trade_bot->trade_amount);
+                  $bot_5_wallet->increment($list_trade_bot->request_currency,$list_trade_bot->request_amount);
 
-                  $bot_3_wallet->decrement($list_trade_bot->request_currency,$list_trade_bot->request_amount);
-                  $bot_3_wallet->increment($list_trade_bot->trade_currency,$list_trade_bot->trade_amount);
+                  $bot_1_wallet->decrement($list_trade_bot->request_currency,$list_trade_bot->request_amount);
+                  $bot_1_wallet->increment($list_trade_bot->trade_currency,$list_trade_bot->trade_amount);
 
                   if($history->save()){
                       $list_trade_bot->status = 0;
                       $list_trade_bot->save();
-                      $this->line('Sucess! bot7');
+                      $this->line('Sucess! bot5');
                       broadcast(new TradeRemoved($list_trade_bot->id));
                   }
               }else{
-                  $this->line('bot7 is out of balance!');
+                  $this->line('bot5 is out of balance!');
               }
           }
       }else{
-          $this->line('bot7 has no trade post');
+          $this->line('bot5 has no trade post');
       }
     }
 

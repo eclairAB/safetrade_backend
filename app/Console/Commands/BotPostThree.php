@@ -49,7 +49,7 @@ class BotPostThree extends Command
 
     public function executeCommand()
     {
-      $bot_wallets = UserCurrency::where('user_id', 5)->first();
+      $bot_wallets = UserCurrency::where('user_id', 3)->first();
 
       $arr = $this->getPairings();
       $trade_index = array_rand($arr);
@@ -71,7 +71,7 @@ class BotPostThree extends Command
       }else{
           $trades = new UserTrades;
 
-          $trades->user_id = 5;
+          $trades->user_id = 3;
           $trades->request_amount = $debit_crypto;
           $trades->trade_amount = $credit_crypto;
           $trades->request_currency = $first;
