@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 
 use App\Events\AssetPriceUpdated;
 use App\Asset;
+use App\UserBet;
 
 class ComputeAssetPrice extends Command
 {
@@ -73,7 +74,15 @@ class ComputeAssetPrice extends Command
         $interval = $this->getInterval();
 
         $count = 1;
-        while ($count <= 1800) {
+        $betCounts = random_int(10, 20);
+
+        $bets = [];
+
+        foreach (range(1, $betCounts) as $count) {
+            array_push($bets, random_int(1, 60));
+        }
+
+        while ($count <= 60) {
             $newPrice = \DB::select("
                 INSERT INTO asset_price_histories(asset_id, timestamp, price)
                 SELECT $assetId, '$timestamp'::timestamptz, (price_histories.price - (up_total - down_total)) FROM (
@@ -91,6 +100,14 @@ class ComputeAssetPrice extends Command
                 RETURNING price;
             ")[0];
 
+            $userBet = null;
+            if (in_array($count, $bets)) {
+                $userBet = UserBet::whereBetween('timestamp', [
+                    $timestamp,
+                    $timestamp->endOfSecond(),
+                ])->first();
+            }
+
             while ($timestamp == CarbonImmutable::now()->startOfSecond()) {
                 // Wait until it's time
             }
@@ -98,7 +115,8 @@ class ComputeAssetPrice extends Command
                 new AssetPriceUpdated(
                     $assetId,
                     $timestamp->timestamp,
-                    $newPrice->price
+                    $newPrice->price,
+                    $userBet
                 )
             );
             $count++;
