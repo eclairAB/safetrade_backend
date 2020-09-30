@@ -52,7 +52,7 @@ return [
             'driver' => 'local',
             // 'root' => storage_path('app/public'),
             // 'url' => env('APP_URL').'/storage',
-            'root' => public_path(),
+            'root' => public_path('images/uploads'),
             'url' => env('APP_URL').'/public',
             'visibility' => 'public',
         ],

@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 Route::post('login', 'Auth\UserController@login');
-Route::get('getProfile/{uid}', 'Auth\UserController@getProfile');
 Route::post('register', 'Auth\UserController@register');
 
 Route::group(['middleware' => 'auth:api'], function () {
@@ -23,10 +22,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('sample/lazy', 'UserWalletController@sampleLazy');
 
     Route::post('details', 'Auth\UserController@details');
+    Route::get('getProfile', 'Auth\UserController@getProfile');
     Route::post('update/user', 'Auth\UserController@updateProfile');
     Route::get('my/currencies', 'UserWalletController@myCurrencies');
     Route::post('loadwallet', 'UserWalletController@loadWallet');
     Route::post('search/other/user', 'UserWalletController@searchOtherUser');
+    Route::get('base64/dp', 'Auth\UserController@getBase64Image');
     Route::post('update/user/dp', 'Auth\UserController@updateProfilePicture');
     Route::post('update/user/basic/{id}', 'Auth\UserController@updateProfileBasic');
     Route::post('update/user/account/{id}', 'Auth\UserController@updateProfileAccount');

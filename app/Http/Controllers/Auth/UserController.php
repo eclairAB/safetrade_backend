@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Traits\UploadTrait;
 use App\UserCurrency;
@@ -27,6 +28,8 @@ class UserController extends Controller
         ) {
             $user = Auth::user();
             $user['token'] = $user->createToken('MyApp')->accessToken;
+            $user->user_display_pic = asset('images/' . $user->user_display_pic);
+
             return response()->json($user);
         } else {
             return response()->json(
@@ -36,9 +39,21 @@ class UserController extends Controller
         }
     }
 
-    public function getProfile($uid)
+    public function getBase64Image()
     {
-        $users = User::select($uid)
+        $user = User::findOrFail(auth()->user()->id);
+        $image_path = asset('images/' . $user->user_display_pic);
+
+        $fileExtension = pathinfo($image_path, PATHINFO_EXTENSION);
+        $data = base64_encode(file_get_contents($image_path)); 
+        $base64 = 'data:image/' . $fileExtension . ';base64,' . $data;
+        return response()->json($base64);
+    }
+
+    public function getProfile()
+    {
+        $uid = User::findOrFail(auth()->user()->id);
+        $users = User::select($uid->id)
             ->select([
                 'id',
                 'username',
@@ -57,9 +72,11 @@ class UserController extends Controller
                 'is_staff',
                 'is_superuser',
             ])
-            ->find($uid);
+            ->find($uid->id);
 
-        return response()->json(compact('users'));
+        $users->user_display_pic = asset('images/' . $users->user_display_pic);
+
+        return response()->json($users);
     }
 
     public function register(Request $request)
@@ -110,32 +127,25 @@ class UserController extends Controller
     }
 
     public function updateProfilePicture(Request $request) {
-      if  (auth()->user()) {
-        if ($request->transaction_pin == Auth::user()->transaction_pin) {
-          $request->validate([
-              'user_display_pic'     =>  'required|image|mimes:jpeg,png,jpg,gif|max:2048'
-          ]);
+        if  (auth()->user()) {
+            if ($request->transaction_pin == Auth::user()->transaction_pin) {
 
-          $user = User::findOrFail(auth()->user()->id);
-          $email = Auth::user()->email;
+                $user = User::findOrFail(auth()->user()->id);
 
-          if ($request->has('user_display_pic')) {
-              $image = $request->file('user_display_pic');
-              $folder = '/uploads/images/';
-              $filePath = $folder . $email. '.' . $image->getClientOriginalExtension();
-              $this->uploadOne($image, $folder, 'public', $email);
-              $user->user_display_pic = $filePath;
-          }
-          $user->save();
+                $image_64 = $request->image; //your base64 encoded data
+                $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
 
-          // Return user back and show a flash message
-          // return redirect()->back()->with(['status' => 'Profile updated successfully.']);
-        } else {
-          return response()->json([
-              'message' => 'Incorrect Transaction Pin!',
-          ]);
+                $replace = substr($image_64, 0, strpos($image_64, ',')+1);
+                // find substring fro replace here eg: data:image/png;base64,
+                $image = str_replace($replace, '', $image_64); 
+                $image = str_replace(' ', '+', $image); 
+                $imageName = $user->id . '.' . $extension;
+                $user->user_display_pic = 'uploads/' . $user->id. '.' . $extension;
+                Storage::disk('public')->put($imageName, base64_decode($image));
+            }
+            $user->save();
+            return response()->json(['success' => $user], $this->successStatus);
         }
-      }
     }
 
     public function updateProfileBasic(Request $request, $id)

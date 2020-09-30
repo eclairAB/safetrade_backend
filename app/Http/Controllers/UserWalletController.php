@@ -12,6 +12,7 @@ use App\UserCurrency;
 use App\Events\TradePosted;
 use App\Events\TradeRemoved;
 use App\Events\WalletUpdated;
+use Illuminate\Support\Facades\Storage;
 use Auth;
 use DB;
 
@@ -68,7 +69,7 @@ class UserWalletController extends Controller
         $search_users = User::where('username','LIKE', '%' .$keyword. '%')->get();
 
         foreach ($search_users as $search_user) {
-            if(($search_user->id != $user->id) && !($search_user->id > 2 && $search_user->id < 8)){
+            if(($search_user->id != $user->id) && !$this->isBot($search_user->username)){
                 $array = [
                     'id' => $search_user->id,
                     'username' => $search_user->username,
@@ -79,8 +80,9 @@ class UserWalletController extends Controller
                 array_push($data,$array);
             }
         }
-        return response()->json(compact('data'));
+        $data[0]['user_display_pic'] = asset('images/' . $data[0]['user_display_pic']);
 
+        return response()->json(compact('data'));
     }
 
 
