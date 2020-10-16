@@ -73,16 +73,17 @@ class ComputeAssetPrice extends Command
         $assetId = $this->getAssetId($assetName);
         $interval = $this->getInterval();
 
-        $count = 1;
+        /*$count = 1;
         $betCounts = random_int(10, 20);
 
         $bets = [];
 
         foreach (range(1, $betCounts) as $count) {
             array_push($bets, random_int(1, 60));
-        }
+        }*/
 
-        while ($count <= 60) {
+        // while ($count <= 60) {
+        while (true) {
             $newPrice = \DB::select("
                 INSERT INTO asset_price_histories(asset_id, timestamp, price)
                 SELECT $assetId, '$timestamp'::timestamptz, (price_histories.price - (up_total - down_total)) FROM (
@@ -100,13 +101,13 @@ class ComputeAssetPrice extends Command
                 RETURNING price;
             ")[0];
 
-            $userBet = null;
-            if (in_array($count, $bets)) {
+            // $userBet = null;
+            // if (in_array($count, $bets)) {
                 $userBet = UserBet::whereBetween('timestamp', [
                     $timestamp,
                     $timestamp->endOfSecond(),
                 ])->first();
-            }
+            // }
 
             while ($timestamp == CarbonImmutable::now()->startOfSecond()) {
                 // Wait until it's time
@@ -119,7 +120,7 @@ class ComputeAssetPrice extends Command
                     $userBet
                 )
             );
-            $count++;
+            // $count++;
             $timestamp = $timestamp->addSecond();
         }
         $this->info('End: ComputeAssetPrice job for asset: ' . $assetName);

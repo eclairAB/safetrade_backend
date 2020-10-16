@@ -12,14 +12,17 @@ class AssetController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @return \Illuminate\Http\Response
      * @return Response
      * @throws
      */
     public function index()
     {
-        $this->authorize('view-any',Asset::class);
-        $assets = Asset::paginate(10);
-        return response()->json($assets,200);
+        $assets = Asset::all();
+        return response()->json($assets);
+        // $this->authorize('view-any',Asset::class);
+        // $assets = Asset::paginate(10);
+        // return response()->json($assets,200);
     }
 
     /**
@@ -44,10 +47,11 @@ class AssetController extends Controller
      * @return Response
      * @throws
      */
-    public function show(Asset $asset)
+    public function show($asset)
     {
-        $this->authorize('view', $asset);
-        return response()->json($asset,200);
+        return response()->json(Asset::findOrFail($asset));
+        // $this->authorize('view', $asset);
+        // return response()->json($asset,200);
     }
 
     /**
@@ -58,9 +62,11 @@ class AssetController extends Controller
      * @return Response
      * @throws
      */
-    public function update(AssetStoreRequest $request, Asset $asset)
+    public function update(AssetStoreRequest $request, $asset)
+    // public function update(AssetStoreRequest $request, Asset $asset)
     {
-        $this->authorize('update', $asset);
+        $asset = Asset::findOrFail($asset);
+        // $this->authorize('update', $asset);
         $validated = $request->validated();
         $asset->update($validated);
         return response()->json($asset, Response::HTTP_OK);
@@ -73,8 +79,10 @@ class AssetController extends Controller
      * @return Response
      * @throws
      */
-    public function destroy(Asset $asset)
+    public function destroy($asset)
+    // public function destroy(Asset $asset)
     {
+        $asset = Asset::findOrFail($asset);
         $this->authorize('delete', $asset);
         $asset->delete();
         return response()->json(null, Response::HTTP_NO_CONTENT);

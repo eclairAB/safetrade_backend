@@ -15,27 +15,24 @@ class AssetBetController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Asset $asset
      * @return \Illuminate\Http\Response
      */
-    public function index(Asset $asset)
+    public function index(int $asset)
     {
-//        is anyone logged in can access this index?
-        $bets = UserBet::where('asset_id', $asset->id);
+        Asset::findOrFail($asset);
+        $bets = UserBet::where('asset_id', $asset);
+
         $user = Request::get('user', null);
 
-        if ($user)
+        if ($user) {
             $bets = $bets->where('user_id', $user);
-
+        }
         return $bets->orderBy('timestamp', 'desc')->paginate(10);
     }
 
-    public function store(Asset $asset, AssetBetStoreRequest $request)
+    public function store(int $asset, AssetBetStoreRequest $request)
     {
-//        return $request->user();
-//        before ma-store ang amount dapat i-check kung naa paba siyay kwarta.
-//        unsaon pud pag retrieve inig madaog ang beter?
-        $this->authorize('create', UserBet::class);
+        Asset::findOrFail($asset);
         $validated = $request->validated();
         $validated['asset_id'] = $asset;
         $validated['user_id'] = $request->user()->id;
