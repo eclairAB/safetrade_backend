@@ -24,3 +24,5 @@ readme.html
 
 #phpstorm
 .idea/
+#macos
+.DS_Store

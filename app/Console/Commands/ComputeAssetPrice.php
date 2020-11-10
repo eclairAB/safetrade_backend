@@ -73,14 +73,14 @@ class ComputeAssetPrice extends Command
         $assetId = $this->getAssetId($assetName);
         $interval = $this->getInterval();
 
-        /*$count = 1;
-        $betCounts = random_int(10, 20);
-
-        $bets = [];
-
-        foreach (range(1, $betCounts) as $count) {
-            array_push($bets, random_int(1, 60));
-        }*/
+        $count = 1;
+//        $betCounts = random_int(10, 20);
+//
+//        $bets = [];
+//
+//        foreach (range(1, $betCounts) as $count) {
+//            array_push($bets, random_int(1, 60));
+//        }
 
         // while ($count <= 60) {
         while (true) {
@@ -101,13 +101,40 @@ class ComputeAssetPrice extends Command
                 RETURNING price;
             ")[0];
 
-            // $userBet = null;
+            $userBet = null;
             // if (in_array($count, $bets)) {
-                $userBet = UserBet::whereBetween('timestamp', [
-                    $timestamp,
-                    $timestamp->endOfSecond(),
-                ])->first();
+            $userBet = UserBet::with('user:id,user_display_pic')->whereBetween('timestamp', [
+                $timestamp,
+                $timestamp->endOfSecond(),
+            ])->get();
             // }
+
+            //FILTER $userBet IF IT HAS REAL HUMAN BETTING
+            $human = $userBet->filter(function ($value) {
+                return $value->user_id > 5; // id 1 to 5 are bots
+            });
+
+            if($human->isNotEmpty()){
+                //JUST SELECT ONE RANDOM HUMAN BET
+                $userBet = $human->random();
+            }
+            else
+            {
+                if($count>=5 || $count<=10)
+                {
+                    //RANDOMIZE IF YOU WANT TO SHOW IT OR NOT
+                    if (mt_rand(0,1)) {
+                        //IF SHOW, RANDOM SELECT BOT BET
+                        $userBet = $userBet->random();
+                    }
+                    else
+                        $userBet = null;
+                }
+                else{
+                    $userBet=null;
+                    $count=1;
+                }
+            }
 
             while ($timestamp == CarbonImmutable::now()->startOfSecond()) {
                 // Wait until it's time
@@ -120,7 +147,7 @@ class ComputeAssetPrice extends Command
                     $userBet
                 )
             );
-            // $count++;
+            $count++;
             $timestamp = $timestamp->addSecond();
         }
         $this->info('End: ComputeAssetPrice job for asset: ' . $assetName);

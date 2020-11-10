@@ -31,14 +31,14 @@ class AssetPriceUpdated implements ShouldBroadCast
             'timestamp' => $timestamp,
             'price' => $price,
             'betData' => null,
-            'user_id' => $userBet->user_id
         ];
         if ($userBet) {
             $this->data['betData'] = [
                 'up' => $userBet->will_go_up,
                 'amount' => $userBet->amount,
                 'timestamp' => strtotime($userBet->timestamp),
-                'user_id' => $userBet->user_id
+                'user_id' => $userBet->user_id,
+                'avatar_url' => $userBet->user->user_display_pic
             ];
         }
     }
